@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from '@ionic/vue-router';
 
 //import MemoriesPage from '../pages/MemoriesPage.vue';
-import HomeView from '../views/HomeView.vue'
+import HomePage from '../pages/HomePage.vue'
 const routes = [
   /*{
     path: '/',
@@ -21,8 +21,12 @@ const routes = [
   }*/
   {
     path: '/',
+    redirect: '/home'
+  },
+  {
+    path: '/home',
     name: 'home',
-    component: HomeView
+    component: HomePage
   },
   {
     path: '/about',
@@ -35,22 +39,22 @@ const routes = [
   {
     path: '/giris-yap',
     name: 'giris-yap',
-    component: () => import('../views/LoginView.vue')
+    component: () => import('../pages/LoginPage.vue')
   },
   {
     path: '/kayit-ol',
     name: 'kayit-ol',
-    component: () => import('../views/RegisterView.vue')
+    component: () => import('../pages/RegisterPage.vue')
   },
   {
     path: '/sepet',
     name: 'sepet',
-    component: () => import('../views/BasketView.vue')
+    component: () => import('../pages/BasketPage.vue')
   },
   {
     path: '/siparis',
     name: 'siparis',
-    component: () => import('../views/OrderView.vue')
+    component: () => import('../pages/OrderPage.vue')
   }
 ]
 

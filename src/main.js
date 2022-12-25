@@ -34,7 +34,7 @@ const app = createApp(App)
   .use(store);
 
 app.component('base-layout', BaseLayout);
-  
+
 router.isReady().then(() => {
   app.mount('#app');
 });

@@ -27,7 +27,8 @@
     <h1>Hoşgeldiniz.</h1>
     <div>
       <ol class="list-group list-group-numbered">
-        <li class="list-group-item d-flex justify-content-between align-items-center" v-for="item of basket.items">
+        <li class="list-group-item d-flex justify-content-between align-items-center" v-for="item of basket.items"
+          :key="item.id">
           <div class="ms-2 me-auto">
             <img :src="item.image" class="item-image" alt="...">
             <span class="fw-bold ms-2" v-text="item.name"></span>
@@ -48,7 +49,7 @@
         Adres:
         <select name="" id="" v-model="selectedAddressId" @change="selectAddress">
           <option value=""></option>
-          <option v-for="address of addresses" :value="address.id" v-text="address.title"></option>
+          <option v-for="address of addresses" :value="address.id" v-text="address.title" :key="address.id"></option>
         </select>
         <textarea name="" id="" cols="30" rows="2" v-model="selectedAddress.address"></textarea>
         <input type="text" v-model="selectedAddress.apartment">
@@ -61,6 +62,38 @@
 </template>
  
 <script>
+let GETTING_TIMEOUT = 5000;
+
+function fetchFunc(resource, method, options = {}, body) {
+  const { timeout = GETTING_TIMEOUT } = options;
+  const controller = new AbortController();
+  const AbortTimer = setTimeout(() => controller.abort(), timeout);
+  let headers = {
+    method: method,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers
+    },
+    signal: controller.signal
+  };
+  if (method == "POST" || method == "PUT") {
+    headers.body = JSON.stringify(body);
+  }
+  const response = new Promise((resolve, reject) => {
+    fetch(resource, headers)
+      .then(response => response.json())
+      .then(data => {
+        resolve(data);
+      })
+      .catch(() => {
+        reject();
+      })
+      .finally(() => {
+        clearTimeout(AbortTimer);
+      });
+  });
+  return response;
+}
 export default {
   components: {
   },
@@ -80,7 +113,7 @@ export default {
   },
   methods: {
     getUsersAdressByUserId() {
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
         let user = JSON.parse(localStorage.getItem("user"));
         fetchFunc("http://localhost:8080/addresses/user/" + user.id, "GET", {
           headers: {
@@ -92,7 +125,7 @@ export default {
       });
     },
     getUsersBasketByUserId() {
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
         let user = JSON.parse(localStorage.getItem("user"));
         fetchFunc("http://localhost:8080/baskets/user/" + user.id, "GET", {
           headers: {
@@ -104,7 +137,7 @@ export default {
       });
     },
     setUsersBasket() {
-      let user = JSON.parse(localStorage.getItem("user"));
+      //let user = JSON.parse(localStorage.getItem("user"));
       let method = this.basket.id ? "PUT" : "POST";
       fetchFunc("http://localhost:8080/baskets/", method, {
         headers: {
