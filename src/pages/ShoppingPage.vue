@@ -1,17 +1,17 @@
 <template>
-    <main-layout pageIndex="3">
-        <order-view />
+    <main-layout pageIndex="1">
+        <shopping-view pageIndex="1" />
     </main-layout>
 </template>
   
 <script>
 import MainLayout from '../layouts/MainLayout.vue';
-import OrderView from '../views/OrderView.vue';
+import ShoppingView from '../views/ShoppingView.vue';
 
 export default {
     components: {
         MainLayout,
-        OrderView
+        ShoppingView
     },
     data() {
         return {}

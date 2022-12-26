@@ -25,10 +25,10 @@
 <template>
   <main>
     <h1>Hoşgeldiniz.</h1>
-    <div v-for="order of orders" :key="order.id">
+    <div v-for="order of orders" :key="order">
       <ol class="list-group list-group-numbered">
         <li class="list-group-item d-flex justify-content-between align-items-center"
-          v-for="item of order.baskets[0].items" :key="item.id">
+          v-for="item of order.baskets[0].items" :key="item">
           <div class="ms-2 me-auto">
             <img :src="item.image" class="item-image" alt="...">
             <span class="fw-bold ms-2" v-text="item.name"></span>
@@ -56,38 +56,6 @@
 </template>
  
 <script>
-let GETTING_TIMEOUT = 5000;
-
-function fetchFunc(resource, method, options = {}, body) {
-  const { timeout = GETTING_TIMEOUT } = options;
-  const controller = new AbortController();
-  const AbortTimer = setTimeout(() => controller.abort(), timeout);
-  let headers = {
-    method: method,
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers
-    },
-    signal: controller.signal
-  };
-  if (method == "POST" || method == "PUT") {
-    headers.body = JSON.stringify(body);
-  }
-  const response = new Promise((resolve, reject) => {
-    fetch(resource, headers)
-      .then(response => response.json())
-      .then(data => {
-        resolve(data);
-      })
-      .catch(() => {
-        reject();
-      })
-      .finally(() => {
-        clearTimeout(AbortTimer);
-      });
-  });
-  return response;
-}
 export default {
   components: {
   },
@@ -112,7 +80,7 @@ export default {
     getUsersOrdersByUserId() {
       return new Promise((resolve) => {
         let user = JSON.parse(localStorage.getItem("user"));
-        fetchFunc("http://localhost:8080/purchaseOrders/user/" + user.id, "GET", {
+        this.fetchFunc("http://localhost:8080/purchaseOrders/user/" + user.id, "GET", {
           headers: {
             "Authorization": localStorage.getItem("token")
           }
@@ -124,7 +92,7 @@ export default {
     getUsersBasketByUserId() {
       return new Promise((resolve) => {
         let user = JSON.parse(localStorage.getItem("user"));
-        fetchFunc("http://localhost:8080/baskets/user/" + user.id, "GET", {
+        this.fetchFunc("http://localhost:8080/baskets/user/" + user.id, "GET", {
           headers: {
             "Authorization": localStorage.getItem("token")
           }

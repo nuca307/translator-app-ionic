@@ -1,15 +1,20 @@
 <template>
-  <base-layout page-title="Sepet" page-default-back-link="/home">
-    <basket-view />
-  </base-layout>
+    <main-layout pageIndex="2">
+        <basket-view />
+    </main-layout>
 </template>
-
+  
 <script>
+import MainLayout from '../layouts/MainLayout.vue';
 import BasketView from '../views/BasketView.vue';
 
 export default {
-  components: {
-    BasketView
-  },
+    components: {
+        MainLayout,
+        BasketView
+    },
+    data() {
+        return {}
+    },
 };
 </script>

@@ -1,7 +1,6 @@
 import { createApp } from 'vue'
 
 import App from './App.vue'
-import BaseLayout from './components/base/BaseLayout.vue';
 import router from './router';
 import store from './store';
 
@@ -27,13 +26,18 @@ import '@ionic/vue/css/display.css';
 import './theme/variables.css';
 import './theme/core.css';
 
+import "bootstrap/dist/css/bootstrap.min.css"
+import "bootstrap"
+
+import mitt from 'mitt';
+const emitter = mitt();
 
 const app = createApp(App)
   .use(IonicVue)
   .use(router)
   .use(store);
 
-app.component('base-layout', BaseLayout);
+app.config.globalProperties.emitter = emitter;
 
 router.isReady().then(() => {
   app.mount('#app');
