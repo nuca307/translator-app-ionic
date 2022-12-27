@@ -249,6 +249,7 @@ export default {
                 method: method,
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': localStorage.getItem('token'),
                     ...options.headers
                 },
                 signal: controller.signal

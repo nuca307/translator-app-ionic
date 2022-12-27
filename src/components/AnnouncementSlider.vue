@@ -4,13 +4,11 @@
         <div :id="unique" class="carousel slide position-relative" style="background-color: #b6dfcc;"
             data-bs-ride="carousel" data-bs-touch="true" data-bs-pause="hover">
             <div class="carousel-indicators">
-                <div v-for="(announcement, announcementIndex) of announcements" class="carousel-item text-center"
-                    :key="announcement">
-                    <button type="button" :data-bs-target="'#' + unique" :data-bs-slide-to="announcementIndex"
-                        :class="{ active: selectedIndex == announcementIndex }"
-                        :aria-current="{ active: selectedIndex == announcementIndex }"
-                        :aria-label="announcement.title"></button>
-                </div>
+                <button type="button" v-for="(announcement, announcementIndex) of announcements" :key="announcement"
+                    :data-bs-target="'#' + unique" :data-bs-slide-to="announcementIndex"
+                    :class="{ active: selectedIndex == announcementIndex }"
+                    :aria-current="selectedIndex == announcementIndex ? 'active' : ''"
+                    :aria-label="announcement.title"></button>
             </div>
 
             <div :id="unique + 'thumbnails_carousel_inner'" class="carousel-inner text-center"

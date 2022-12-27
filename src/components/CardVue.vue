@@ -3,7 +3,7 @@
         <div class="card mt-3" style="overflow: hidden;">
             <RouterLink :to="link.url.replace('%data%', data[link.key])" class="stretched-link"></RouterLink>
             <div class="ratio ratio-16x9">
-                <img :src="'http://localhost:8080' + data[keys[0]]" class="card-img-top" alt="...">
+                <img :src="'http://192.168.1.100:8080' + data[keys[0]]" class="card-img-top" alt="...">
             </div>
             <div class="position-absolute p-1"
                 style="border-bottom-right-radius:1rem;background-color:#0d6efddd;color: white;min-width: 8rem;">

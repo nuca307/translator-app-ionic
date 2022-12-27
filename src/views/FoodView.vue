@@ -73,9 +73,40 @@ export default {
     }
   },
   methods: {
+    fetchFunc(resource, method, options = {}, body) {
+      const { timeout = 20000 } = options;
+      const controller = new AbortController();
+      const AbortTimer = setTimeout(() => controller.abort(), timeout);
+      let headers = {
+        method: method,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': localStorage.getItem('token'),
+          ...options.headers
+        },
+        signal: controller.signal
+      };
+      if (method == "POST" || method == "PUT") {
+        headers.body = JSON.stringify(body);
+      }
+      const response = new Promise((resolve, reject) => {
+        fetch(resource, headers)
+          .then(response => response.json())
+          .then(data => {
+            resolve(data);
+          })
+          .catch(() => {
+            reject();
+          })
+          .finally(() => {
+            clearTimeout(AbortTimer);
+          });
+      });
+      return response;
+    },
     getAllVendors(district) {
       return new Promise((resolve) => {
-        this.fetchFunc("http://localhost:8080/public/vendors/active/" + district + "/food", "GET", {}, {}).then(res => {
+        this.fetchFunc("http://192.168.1.100:8080/public/vendors/active/" + district + "/food", "GET", {}, {}).then(res => {
           this.vendors = res;
           resolve(res);
         })
@@ -85,7 +116,7 @@ export default {
     getUsersAddressByUserId() {
       return new Promise((resolve) => {
         let user = JSON.parse(localStorage.getItem("user"));
-        this.fetchFunc("http://localhost:8080/addresses/user/" + user.id, "GET", {}).then(res => {
+        this.fetchFunc("http://192.168.1.100:8080/addresses/user/" + user.id, "GET", {}).then(res => {
           this.addresses = res;
           resolve(res);
         })
@@ -93,7 +124,7 @@ export default {
     },
     getAllAnnouncements() {
       return new Promise((resolve) => {
-        this.fetchFunc("http://localhost:8080/public/announcements", "GET", {}).then(res => {
+        this.fetchFunc("http://192.168.1.100:8080/public/announcements", "GET", {}).then(res => {
           this.announcements = res;
           resolve(res);
         })

@@ -1,3 +1,9 @@
+<style>
+.modal-backdrop {
+    /* bug fix - no overlay */
+    display: none;
+}
+</style>
 <template>
     <div class="modal fade" tabindex="-1" id="addresses_modal" ref="addressesModal">
         <div class="modal-dialog">
@@ -73,6 +79,37 @@ export default {
         }
     },
     methods: {
+        fetchFunc(resource, method, options = {}, body) {
+            const { timeout = 20000 } = options;
+            const controller = new AbortController();
+            const AbortTimer = setTimeout(() => controller.abort(), timeout);
+            let headers = {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': localStorage.getItem('token'),
+                    ...options.headers
+                },
+                signal: controller.signal
+            };
+            if (method == "POST" || method == "PUT") {
+                headers.body = JSON.stringify(body);
+            }
+            const response = new Promise((resolve, reject) => {
+                fetch(resource, headers)
+                    .then(response => response.json())
+                    .then(data => {
+                        resolve(data);
+                    })
+                    .catch(() => {
+                        reject();
+                    })
+                    .finally(() => {
+                        clearTimeout(AbortTimer);
+                    });
+            });
+            return response;
+        },
         selectAddress(address) {
             this.emitter.emit("addresses_modal", JSON.parse(JSON.stringify(address)));
             localStorage.setItem("address", JSON.stringify(address));
@@ -83,7 +120,7 @@ export default {
         setAddress(address) {
             if (!this.validateAddress(address)) return;
             let method = (address.id) ? "PUT" : "POST";
-            this.fetchFunc("http://localhost:8080/addresses", method, {}, address).then(() => {
+            this.fetchFunc("http://192.168.1.100:8080/addresses", method, {}, address).then(() => {
                 this.showToast();
                 this.emitter.emit("addresses_modal", JSON.parse(JSON.stringify(address)));
                 localStorage.setItem("address", JSON.stringify(address));

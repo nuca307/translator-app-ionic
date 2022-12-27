@@ -1,5 +1,5 @@
 <template>
-    <div class="container-fluid mt-2 d-flex justify-content-center align-items-center"
+    <ion-page class="container-fluid mt-2 d-flex justify-content-center align-items-center"
         style="width: 100vw;height: 100vh;">
         <form action="">
             <div class="text-center">
@@ -18,15 +18,17 @@
                 <span class="text-danger" v-text="alert"></span>
             </div>
         </form>
-    </div>
+    </ion-page>
 </template>
 <script>
 import { RouterLink } from 'vue-router';
+import { IonPage } from '@ionic/vue';
 
 export default {
-    components: [
-        RouterLink
-    ],
+    components: {
+        RouterLink,
+        IonPage
+    },
     data() {
         return {
             email: "",
@@ -43,6 +45,7 @@ export default {
                 method: method,
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': localStorage.getItem('token'),
                     ...options.headers
                 },
                 signal: controller.signal

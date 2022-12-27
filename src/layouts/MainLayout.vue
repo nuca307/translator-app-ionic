@@ -1,5 +1,5 @@
 <template>
-    <div class="container-fluid">
+    <ion-page class="container-fluid">
         <div class="row flex-nowrap">
             <main class="col py-3" style="overflow:scroll;max-height: 100vh;">
                 <navbar :pageIndex="pageIndex" :basket="basket" :username="getUserName"></navbar>
@@ -7,21 +7,22 @@
             </main>
         </div>
         <toast-vue :toast="toast"></toast-vue>
-    </div>
+    </ion-page>
 </template>
   
 <script>
 import { Toast } from "bootstrap";
 import Navbar from "../components/NavbarVue.vue";
 import ToastVue from '../components/ToastVue.vue';
-
+import { IonPage } from "@ionic/vue";
 
 
 export default {
     props: ["pageIndex"],
     components: {
         Navbar,
-        ToastVue
+        ToastVue,
+        IonPage
     },
     provide: function () {
         return {
@@ -73,6 +74,7 @@ export default {
                 method: method,
                 headers: {
                     'Content-Type': 'application/json',
+                    'Authorization': localStorage.getItem('token'),
                     ...options.headers
                 },
                 signal: controller.signal
@@ -117,7 +119,7 @@ export default {
             }
             let method = this.basket.id ? "PUT" : "POST";
             this.basket.userId = user.id;
-            this.fetchFunc("http://localhost:8080/baskets/", method, {
+            this.fetchFunc("http://192.168.1.100:8080/baskets/", method, {
                 headers: {
                     "Authorization": localStorage.getItem("token")
                 }
@@ -137,7 +139,7 @@ export default {
         getUsersBasketByUserId() {
             let user = JSON.parse(localStorage.getItem("user"));
             return new Promise((resolve) => {
-                this.fetchFunc("http://localhost:8080/baskets/user/" + user.id, "GET", {
+                this.fetchFunc("http://192.168.1.100:8080/baskets/user/" + user.id, "GET", {
                     headers: {
                         "Authorization": localStorage.getItem("token")
                     }

@@ -1,5 +1,5 @@
 <template>
-    <div class="container-fluid mt-2 d-flex justify-content-center align-items-center"
+    <ion-page class="container-fluid mt-2 d-flex justify-content-center align-items-center"
         style="width: 100vw;height: 100vh;">
         <form action="">
             <div class="text-center">
@@ -20,10 +20,14 @@
                 <span class="text-danger" v-text="alert"></span>
             </div>
         </form>
-    </div>
+    </ion-page>
 </template>
 <script>
+import { IonPage } from '@ionic/vue';
 export default {
+    components: {
+        IonPage
+    },
     data() {
         return {
             info: {
@@ -106,7 +110,7 @@ export default {
         },
         submitHandle() {
             if (!this.validateUser()) return;
-            this.fetchFunc("http://localhost:8080/auth/register", "POST", {}, this.info).then((res) => {
+            this.fetchFunc("http://192.168.1.100:8080/auth/register", "POST", {}, this.info).then((res) => {
                 if (res.status == "201" || res.status == "204") {
                     this.alert = res.message
                     this.$router.push("/giris-yap")

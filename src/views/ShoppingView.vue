@@ -7,10 +7,10 @@
       <div class="row">
         <div class="col-12 d-flex justify-content-center">
           <div class="btn-group mt-2">
-            <ion-router to="/alisveris" class="btn btn-lg" aria-current="page"
-              :class="pageIndex == 1 ? 'btn-success' : 'btn-outline-success'">Alışveriş</ion-router>
-            <ion-router to="/yemek" class="btn btn-lg" aria-current="page"
-              :class="pageIndex == 2 ? 'btn-success' : 'btn-outline-success'">Yemek</ion-router>
+            <RouterLink to="/alisveris" class="btn btn-lg" aria-current="page"
+              :class="pageIndex == 1 ? 'btn-success' : 'btn-outline-success'">Alışveriş</RouterLink>
+            <RouterLink to="/yemek" class="btn btn-lg" aria-current="page"
+              :class="pageIndex == 2 ? 'btn-success' : 'btn-outline-success'">Yemek</RouterLink>
           </div>
         </div>
       </div>
@@ -37,7 +37,6 @@ import AnnouncementSlider from '../components/AnnouncementSlider.vue';
 import CardVue from "../components/CardVue.vue";
 import AddressesModal from '../components/AddressModal.vue';
 import { Modal } from 'bootstrap';
-import { IonRouter } from '@ionic/core/components';
 
 export default {
   props: ["pageIndex"],
@@ -45,7 +44,6 @@ export default {
     AnnouncementSlider,
     CardVue,
     AddressesModal,
-    IonRouter
   },
   data() {
     return {
@@ -84,6 +82,7 @@ export default {
         method: method,
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': localStorage.getItem('token'),
           ...options.headers
         },
         signal: controller.signal
