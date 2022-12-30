@@ -16,7 +16,7 @@
       </div>
       <div class="row mt-2">
         <span><i class="fa-solid fa-location-dot"></i>
-          <span v-text="address.title"></span>
+          Konum: <span v-text="address.title"></span>
           <button class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#addresses_modal">Değiştir</button>
         </span>
       </div>

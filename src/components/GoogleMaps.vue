@@ -66,6 +66,8 @@
     </div>
 </template>
 <script>
+import { Geolocation } from '@capacitor/geolocation';
+
 export default {
     data() {
         return {
@@ -308,7 +310,46 @@ export default {
         },
         currentLocation() {
             this.locationLoading = true;
-            if (navigator.geolocation) {
+            Geolocation.getCurrentPosition().then((result) => {
+
+                this.locationLoading = false;
+                var pos = {
+                    lat: result.coords.latitude,
+                    lng: result.coords.longitude
+                };
+                this.marker.setPosition(pos);
+                this.map.setCenter(pos);
+                this.geocoder.geocode({ 'location': pos }, (results, status) => {
+
+                    this.marker.setPosition(pos);
+                    this.map.setCenter(pos);
+
+                    if (status === 'OK') {
+                        if (results[0]) {
+                            const addressComponents = results[0].address_components;
+
+                            // Find the district component
+                            const district = addressComponents.find(component => component.types.includes('administrative_area_level_2')).long_name.turkishToUpper();
+
+                            // Find the province component
+                            this.address.province = addressComponents.find(component => component.types.includes('administrative_area_level_1')).long_name.turkishToUpper();
+                            this.changeDistricts();
+                            this.address = {
+                                ...this.address,
+                                district,
+                                address: results[0].formatted_address,
+                                longitude: parseFloat(pos.lng),
+                                latitude: parseFloat(pos.lat),
+                            }
+                        } else {
+                            console.log('No results found');
+                        }
+                    } else {
+                        console.log('Geocoder failed due to: ' + status);
+                    }
+                });
+            })
+            /*if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition((result) => {
                     this.locationLoading = false;
                     var pos = {
@@ -319,11 +360,11 @@ export default {
                     this.map.setCenter(pos);
                     /*this.marker.setLngLat(this.center).addTo(this.map);
                     this.map.flyTo({ center: this.center, zoom: 15 });
-                    this.getLocation();*/
+                    this.getLocation();*
                 });
             } else {
                 alert("Tarayıcınız Geolocation API desteklemiyor.");
-            }
+            }*/
         },
         selectAddress(willSave = false) {
             if (willSave)
@@ -333,7 +374,7 @@ export default {
         },
         getAllProvinces() {
             return new Promise((resolve) => {
-                this.fetchFunc("http://localhost:8080/public/provinces", "GET", {}).then(res => {
+                this.fetchFunc("http://192.168.1.100:8080/public/provinces", "GET", {}).then(res => {
                     this.provinces = res;
                     resolve(res);
                 })
@@ -349,7 +390,7 @@ export default {
         },
         getAllDistrictsByProvinceId(province) {
             return new Promise((resolve) => {
-                this.fetchFunc("http://localhost:8080/public/districts/" + province.id, "GET", {}).then(res => {
+                this.fetchFunc("http://192.168.1.100:8080/public/districts/" + province.id, "GET", {}).then(res => {
                     this.districts = res;
                     resolve(res);
                 })

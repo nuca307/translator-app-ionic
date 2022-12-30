@@ -111,7 +111,7 @@ export default {
     getUsersOrdersByUserId() {
       return new Promise((resolve) => {
         let user = JSON.parse(localStorage.getItem("user"));
-        this.fetchFunc("http://localhost:8080/purchaseOrders/user/" + user.id, "GET", {
+        this.fetchFunc("http://192.168.1.100:8080/purchaseOrders/user/" + user.id, "GET", {
           headers: {
             "Authorization": localStorage.getItem("token")
           }
@@ -123,7 +123,7 @@ export default {
     getUsersBasketByUserId() {
       return new Promise((resolve) => {
         let user = JSON.parse(localStorage.getItem("user"));
-        this.fetchFunc("http://localhost:8080/baskets/user/" + user.id, "GET", {
+        this.fetchFunc("http://192.168.1.100:8080/baskets/user/" + user.id, "GET", {
           headers: {
             "Authorization": localStorage.getItem("token")
           }

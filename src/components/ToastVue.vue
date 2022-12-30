@@ -1,5 +1,5 @@
 <template>
-    <div class="toast-container top-0 start-50 translate-middle-x">
+    <div class="toast-container bottom-0 start-50 translate-middle-x" z-index="2000">
         <div class="toast fade hide" :class="toast.class" role="alert" aria-live="assertive" aria-atomic="true"
             id="toast_alert">
             <div class="toast-header">

@@ -187,7 +187,7 @@ export default {
         },
         getAllProvinces() {
             return new Promise((resolve) => {
-                this.fetchFunc("http://localhost:8080/public/provinces", "GET", {}).then(res => {
+                this.fetchFunc("http://192.168.1.100:8080/public/provinces", "GET", {}).then(res => {
                     this.provinces = res;
                     resolve(res);
                 })
@@ -203,7 +203,7 @@ export default {
         },
         getAllDistrictsByProvinceId(province) {
             return new Promise((resolve) => {
-                this.fetchFunc("http://localhost:8080/public/districts/" + province.id, "GET", {}).then(res => {
+                this.fetchFunc("http://192.168.1.100:8080/public/districts/" + province.id, "GET", {}).then(res => {
                     this.districts = res;
                     resolve(res);
                 })

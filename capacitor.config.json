@@ -1,6 +1,6 @@
 {
-  "appId": "com.academind.vuememories",
-  "appName": "Vue Memories",
+  "appId": "com.tıktık",
+  "appName": "TıkTık",
   "bundledWebRuntime": false,
   "npmClient": "npm",
   "webDir": "dist",

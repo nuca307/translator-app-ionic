@@ -107,7 +107,7 @@ export default {
     },
     getAllVendors(district) {
       return new Promise((resolve) => {
-        this.fetchFunc("http://localhost:8080/public/vendors/active/" + district + "/shopping", "GET", {}).then(res => {
+        this.fetchFunc("http://192.168.1.100:8080/public/vendors/active/" + district + "/shopping", "GET", {}).then(res => {
           this.vendors = res;
           resolve(res);
         })
@@ -116,7 +116,7 @@ export default {
     getUsersAddressByUserId() {
       return new Promise((resolve) => {
         let user = JSON.parse(localStorage.getItem("user"));
-        this.fetchFunc("http://localhost:8080/addresses/user/" + user.id, "GET", {}).then(res => {
+        this.fetchFunc("http://192.168.1.100:8080/addresses/user/" + user.id, "GET", {}).then(res => {
           this.addresses = res;
           resolve(res);
         })
@@ -124,7 +124,7 @@ export default {
     },
     getAllAnnouncements() {
       return new Promise((resolve) => {
-        this.fetchFunc("http://localhost:8080/public/announcements", "GET", {}).then(res => {
+        this.fetchFunc("http://192.168.1.100:8080/public/announcements", "GET", {}).then(res => {
           this.announcements = res;
           resolve(res);
         })

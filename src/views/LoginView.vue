@@ -69,7 +69,7 @@ export default {
             return response;
         },
         submitHandle() {
-            this.fetchFunc("http://localhost:8080/auth/login", "POST", {}, {
+            this.fetchFunc("http://192.168.1.100:8080/auth/login", "POST", {}, {
                 "email": this.email,
                 "password": this.password
             }).then(res => {

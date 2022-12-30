@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Ionic Vue</string>
-    <string name="title_activity_main">Ionic Vue</string>
+    <string name="app_name">TıkTık</string>
+    <string name="title_activity_main">TıkTık</string>
     <string name="package_name">com.algoritim.ionic</string>
     <string name="custom_url_scheme">com.algoritim.ionic</string>
 </resources>

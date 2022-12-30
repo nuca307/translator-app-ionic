@@ -23,7 +23,7 @@
         <nav class="navbar navbar-expand">
             <div class="container-fluid">
                 <RouterLink to="/" class="navbar-brand">
-                    <img src="/logo_ters.png" alt="TıkTık" width="25">
+                    <img src="assets/logo_ters.png" alt="TıkTık" width="25">
                 </RouterLink>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
@@ -40,22 +40,20 @@
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                         <li class="nav-item mx-1">
                             <div class="btn-group">
-                                <RouterLink to="/kampanyalar" class="btn" aria-current="page"
-                                    :class="pageIndex == 1 ? 'btn-light' : 'btn-outline-light'">Kampanyalar</RouterLink>
+                                <RouterLink to="/kampanyalar" class="btn btn-light" aria-current="page">Kampanyalar
+                                </RouterLink>
                             </div>
                         </li>
                         <li class="nav-item" v-if="wasLoggedIn">
-                            <RouterLink :to="basketLink" class="btn position-relative" aria-current="page"
-                                :class="pageIndex == 2 ? 'btn-light' : 'btn-outline-light'">
+                            <RouterLink :to="basketLink" class="btn btn-light position-relative" aria-current="page">
                                 Sepet
-                                <span class="badge bagde-sm rounded-pill "
-                                    :class="pageIndex == 2 ? 'text-light bg-success' : 'bg-light text-success'">
+                                <span class="badge bagde-sm rounded-pill text-light bg-success">
                                     <span v-text="basketSize"></span>
                                 </span>
 
                             </RouterLink>
                         </li>
-                        <li class="nav-item dropdown ms-1" style="z-index:1111" v-if="wasLoggedIn">
+                        <li class="nav-item dropdown ms-1" v-if="wasLoggedIn">
                             <a class="dropdown-btn btn dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                                 aria-expanded="false">
                                 <span v-html="imageFromName" class="user-photo" :style="colorFromName"></span>

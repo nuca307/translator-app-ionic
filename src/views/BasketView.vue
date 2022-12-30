@@ -50,14 +50,14 @@
       <div><strong>TOPLAM TUTAR: {{ getTotalPrice }} ₺</strong></div>
       <div class="card">
         Adres:
-        <select name="" id="" v-model="selectedAddress.id" @change="selectAddress">
+        <select class="form-select" v-model="selectedAddress.id" @change="selectAddress">
           <option value=""></option>
           <option v-for="address of addresses" :key="address" :value="address.id" v-text="address.title"></option>
         </select>
-        <textarea name="" id="" cols="30" rows="2" v-model="selectedAddress.address"></textarea>
-        <input type="text" v-model="selectedAddress.apartment">
-        <input type="text" v-model="selectedAddress.floor">
-        <input type="text" v-model="selectedAddress.roomNumber">
+        <textarea class="form-control" cols="30" rows="2" v-model="selectedAddress.address"></textarea>
+        <input type="text" class="form-control" v-model="selectedAddress.apartment">
+        <input type="text" class="form-control" v-model="selectedAddress.floor">
+        <input type="text" class="form-control" v-model="selectedAddress.roomNumber">
       </div>
       <button @click="setUsersOrder">Sipariş Oluştur</button>
     </div>
@@ -132,11 +132,7 @@ export default {
     getUsersAdressByUserId() {
       return new Promise((resolve) => {
         let user = JSON.parse(localStorage.getItem("user"));
-        this.fetchFunc("http://localhost:8080/addresses/user/" + user.id, "GET", {
-          headers: {
-            "Authorization": localStorage.getItem("token")
-          }
-        }).then(res => {
+        this.fetchFunc("http://192.168.1.100:8080/addresses/user/" + user.id, "GET", {}).then(res => {
           resolve(res);
         })
       });
@@ -159,11 +155,7 @@ export default {
         });
         orders.push(order);
       })
-      this.fetchFunc("http://localhost:8080/purchaseOrders/batch", "POST", {
-        headers: {
-          "Authorization": localStorage.getItem("token")
-        }
-      },
+      this.fetchFunc("http://192.168.1.100:8080/purchaseOrders/batch", "POST", {},
         orders
       ).then(res => {
         //this.order = res;
@@ -209,7 +201,7 @@ export default {
       }
     }
   },
-  updated() {
+  beforeUpdate() {
     this.basket = [];
     if (this.basketInfo.basketItems) {
       this.basketInfo.basketItems.forEach((item) => {
@@ -224,6 +216,6 @@ export default {
         }
       })
     }
-  },
+  }
 }
 </script>

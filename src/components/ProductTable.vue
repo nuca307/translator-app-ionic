@@ -62,7 +62,7 @@
             <div class="d-flex justify-content-end">
                 <input type="text" v-model="filter" @input="modifyData()"
                     class="form-control input-default d-inline-block" style="width:50%;min-width:150px;" />
-                <button @click="filterData" class="btn btn-primary ml-2">Ara</button>
+                <button @click="modifyData()" class="btn btn-primary ml-2">Ara</button>
             </div>
         </div>
         <div style="width: 100%;overflow: scroll;">
