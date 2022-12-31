@@ -20,6 +20,11 @@
   width: 1.5rem;
   height: 1.5rem;
 }
+
+.list-group-item {
+  display: grid;
+  grid-template-columns: 1fr 10fr 4fr 4fr;
+}
 </style>
 
 <template>
@@ -27,13 +32,12 @@
     <div>
       <bread-crump :links="links"></bread-crump>
       <div v-for="basketExtended of basket" :key="basketExtended">
-        <span v-text="basketExtended.vendor.name"></span>
+        <span class="rounded-top bg-success text-light fw-bold p-2" v-text="basketExtended.vendor.name"></span>
         <ol class="list-group list-group-numbered">
-          <li class="list-group-item d-flex justify-content-between align-items-center"
-            v-for="item of basketExtended.basketItems" :key="item">
+          <li class="list-group-item" v-for="item of basketExtended.basketItems" :key="item">
             <div class="ms-2 me-auto">
               <img :src="item.image" class="item-image" alt="...">
-              <span class="fw-bold ms-2" v-text="item.name"></span>
+              <span class="ms-2" v-text="item.name"></span>
             </div>
             <div class="d-flex align-items-center me-4">
               <button class="item-count-button" @click="removeItem(item)">-</button>
@@ -47,8 +51,8 @@
           </li>
         </ol>
       </div>
-      <div><strong>TOPLAM TUTAR: {{ getTotalPrice }} ₺</strong></div>
-      <div class="card">
+      <div class="bg-success text-light"><strong>TOPLAM TUTAR: {{ getTotalPrice }} ₺</strong></div>
+      <div class="card p-2 mt-4">
         Adres:
         <select class="form-select" v-model="selectedAddress.id" @change="selectAddress">
           <option value=""></option>
@@ -59,7 +63,10 @@
         <input type="text" class="form-control" v-model="selectedAddress.floor">
         <input type="text" class="form-control" v-model="selectedAddress.roomNumber">
       </div>
-      <button @click="setUsersOrder">Sipariş Oluştur</button>
+      <div class="card p-2 mt-4">
+        ÖDEME ENTEGRASYONU İÇİN AYRILMIŞTIR
+      </div>
+      <button class="btn btn-success mt-2" @click="setUsersOrder">Sipariş Oluştur</button>
     </div>
   </main>
 </template>
@@ -132,7 +139,7 @@ export default {
     getUsersAdressByUserId() {
       return new Promise((resolve) => {
         let user = JSON.parse(localStorage.getItem("user"));
-        this.fetchFunc("http://192.168.1.100:8080/addresses/user/" + user.id, "GET", {}).then(res => {
+        this.fetchFunc("https://tıktık.com:8443/api/addresses/user/" + user.id, "GET", {}).then(res => {
           resolve(res);
         })
       });
@@ -155,7 +162,7 @@ export default {
         });
         orders.push(order);
       })
-      this.fetchFunc("http://192.168.1.100:8080/purchaseOrders/batch", "POST", {},
+      this.fetchFunc("https://tıktık.com:8443/api/purchaseOrders/batch", "POST", {},
         orders
       ).then(res => {
         //this.order = res;

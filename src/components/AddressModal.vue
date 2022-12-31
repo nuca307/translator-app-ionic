@@ -120,7 +120,7 @@ export default {
         setAddress(address) {
             if (!this.validateAddress(address)) return;
             let method = (address.id) ? "PUT" : "POST";
-            this.fetchFunc("http://192.168.1.100:8080/addresses", method, {}, address).then(() => {
+            this.fetchFunc("https://tıktık.com:8443/api/addresses", method, {}, address).then(() => {
                 this.showToast();
                 this.emitter.emit("addresses_modal", JSON.parse(JSON.stringify(address)));
                 localStorage.setItem("address", JSON.stringify(address));

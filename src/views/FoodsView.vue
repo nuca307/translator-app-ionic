@@ -2,24 +2,58 @@
   <main>
     <div>
       <div class="row mt-2">
-        <card-vue v-for="category of foods" :key="category" :data="category" :keys="card.keys" :link="card.link">
-        </card-vue>
+        <Breadcrump class="d-none d-md-block" :links="links"></Breadcrump>
+        <div class="d-none d-md-block col-md-3 col-xl-2">
+
+          <div class="list-group sticky-top" style="top:3rem;">
+            <button type="button" class="list-group-item list-group-item-action"
+              :class="{ active: categoryFilter == 0 }" :aria-current="categoryFilter == 0" @click="setFilter(0)">
+              TÜMÜ
+            </button>
+            <button type="button" class="list-group-item list-group-item-action" v-for="category of categories"
+              :key="category" v-text="category.name" :class="{ active: categoryFilter == category.id }"
+              :aria-current="categoryFilter == category.id" @click="setFilter(category.id)"></button>
+          </div>
+        </div>
+        <div class="col-12 d-md-none sticky-top" style="overflow-x: auto ;">
+          <Breadcrump :links="links"></Breadcrump>
+          <div class="list-group list-group-horizontal my-2">
+            <button type="button" class="list-group-item small list-group-item-action"
+              :class="{ active: categoryFilter == 0 }" :aria-current="categoryFilter == 0" @click="setFilter(0)">
+              TÜMÜ
+            </button>
+            <button type="button" class="list-group-item list-group-item-action" v-for="category of categories"
+              :key="category" v-text="category.name" :class="{ active: categoryFilter == category.id }"
+              :aria-current="categoryFilter == category.id" @click="setFilter(category.id)"></button>
+          </div>
+        </div>
+        <div class="col-12 col-md-9 col-xl-10">
+          <food-table class="display" :data="filteredFoods" :columns="columns" unique="foods_table" v-slot="slotData">
+          </food-table>
+        </div>
       </div>
     </div>
   </main>
 </template>
 
 <script>
-import CardVue from "../components/CardVue.vue";
+import Card from "../components/Card.vue";
+import FoodTable from '../components/FoodTable.vue';
+import Breadcrump from "../components/Breadcrump.vue";
 
 export default {
   props: ["pageIndex"],
   components: {
-    CardVue,
+    Card,
+    FoodTable,
+    Breadcrump
   },
   data() {
     return {
       foods: [],
+      filteredFoods: [],
+      categories: [],
+      categoryFilter: 0,
       card: {
         keys: ['imageUrl', 'name'],
         link: {
@@ -27,17 +61,35 @@ export default {
           key: "name"
         }
       },
-    }
-  },
-  computed: {
-    isAddressSet() {
-      let address = JSON.parse(localStorage.getItem('address'));
-      this.address = address ? address : {};
-      let user = JSON.parse(localStorage.getItem('user'));
-      return address != null && address.userId == user.id;
+      columns: [
+        {
+          data: 'images', title: "Adı", index: 0,
+          morph: ["", `<div class='ratio ratio-16x9' style="width:5rem;">
+                        <img src='https://tıktık.com:8443/api%data%'/>
+                      </div>`]
+        }, //TODO
+        { data: 'name', title: "Adı" },
+        { data: 'price', title: "Fiyat", type: "number" },
+        { data: 'discountedPrice', title: "İndirimli Fiyat", type: "number" },
+        { data: 'discount', title: "İndirim Oranı", type: "number" },
+        { data: 'unit', title: "Birim" },
+      ],
+      links: [
+        { to: "/", text: "Anasayfa" },
+        { to: "/kategoriler/foods/" + this.$route.params.vendorId, text: "Kategoriler" },
+        { to: "", text: "Ürünler" }
+      ]
     }
   },
   methods: {
+    /*getAllVendorCategories() {
+      return new Promise((resolve) => {
+        fetchFunc("https://tıktık.com:8443/api/public/foods/vendor/mainCategory/" + this.$route.params.module + "/" + this.$route.params.vendorId, "GET", {}, {}).then(res => {
+          this.foods = res;
+          resolve(res);
+        })
+      });
+    },*/
     fetchFunc(resource, method, options = {}, body) {
       const { timeout = 20000 } = options;
       const controller = new AbortController();
@@ -69,17 +121,44 @@ export default {
       });
       return response;
     },
-    getAllVendorCategories() {
+    setFilter(filter) {
+      this.categoryFilter = filter;
+      this.filterFoods();
+    },
+    filterFoods() {
+      if (this.categoryFilter) {
+        this.filteredFoods = this.foods.filter(food => food.mainCategory.id == this.categoryFilter || food.subCategory.id == this.categoryFilter)
+      }
+      else {
+        this.filteredFoods = JSON.parse(JSON.stringify(this.foods));
+      }
+    },
+    getAllVendorFoodsByCategory() {
       return new Promise((resolve) => {
-        this.fetchFunc("http://192.168.1.100:8080/public/products/vendor/mainCategory/" + this.$route.params.module + "/" + this.$route.params.vendorId, "GET", {}, {}).then(res => {
+        this.fetchFunc("https://tıktık.com:8443/api/public/foods/vendor/mainCategoryId/" + this.$route.params.category + "/" + this.$route.params.vendorId, "GET", {}, {}).then(res => {
           this.foods = res;
+          console.log("a", res);
+          let categories = [];
+          this.foods.forEach(food => {
+            if (food.subCategory) {
+              if (!categories.find(e => e.id == food.subCategory.id)) {
+                categories.push(food.subCategory)
+              }
+            } else {
+              if (!categories.find(e => e.id == food.mainCategory.id)) {
+                categories.unshift(food.mainCategory)
+              }
+            };
+          });
+          this.categories = categories;
+          this.filterFoods();
           resolve(res);
         })
       });
     },
   },
   mounted() {
-    this.getAllVendorCategories();
+    this.getAllVendorFoodsByCategory();
   }
 }
 </script>

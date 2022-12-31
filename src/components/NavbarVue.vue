@@ -58,7 +58,7 @@
                                 aria-expanded="false">
                                 <span v-html="imageFromName" class="user-photo" :style="colorFromName"></span>
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end">
+                            <ul class="dropdown-menu dropdown-menu-end" style="z-index: 1111;">
                                 <li class="nav-item">
                                     <RouterLink to="/siparis" class="dropdown-item" aria-current="page"
                                         :class="pageIndex == 3 ? 'text-white' : ''">Siparişlerim</RouterLink>

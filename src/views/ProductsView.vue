@@ -63,7 +63,7 @@ export default {
         {
           data: 'images', title: "Adı", index: 0,
           morph: ["", `<div class='ratio ratio-16x9' style="width:5rem;">
-                        <img src='http://192.168.1.100:8080%data%'/>
+                        <img src='https://tıktık.com:8443/api%data%'/>
                       </div>`]
         }, //TODO
         { data: 'name', title: "Adı" },
@@ -125,7 +125,7 @@ export default {
     },
     getAllVendorProductsByCategory() {
       return new Promise((resolve) => {
-        this.fetchFunc("http://192.168.1.100:8080/public/products/vendor/mainCategoryId/" + this.$route.params.category + "/" + this.$route.params.vendorId, "GET", {}, {}).then(res => {
+        this.fetchFunc("https://tıktık.com:8443/api/public/products/vendor/mainCategoryId/" + this.$route.params.category + "/" + this.$route.params.vendorId, "GET", {}, {}).then(res => {
           this.products = res;
           let categories = [];
           this.products.forEach(product => {

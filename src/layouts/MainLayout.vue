@@ -4,6 +4,7 @@
             <main class="col py-3" style="overflow:scroll;max-height: 100vh;">
                 <navbar :pageIndex="pageIndex" :basket="basket" :username="getUserName"></navbar>
                 <slot :basket="basket" />
+                <footer-vue></footer-vue>
             </main>
         </div>
         <toast-vue :toast="toast"></toast-vue>
@@ -15,6 +16,7 @@ import { Toast } from "bootstrap";
 import Navbar from "../components/NavbarVue.vue";
 import ToastVue from '../components/ToastVue.vue';
 import { IonPage } from "@ionic/vue";
+import FooterVue from "../components/FooterVue.vue";
 
 
 export default {
@@ -22,7 +24,8 @@ export default {
     components: {
         Navbar,
         ToastVue,
-        IonPage
+        IonPage,
+        FooterVue
     },
     provide: function () {
         return {
@@ -65,7 +68,6 @@ export default {
         }
     },
     methods: {
-
         fetchFunc(resource, method, options = {}, body) {
             const { timeout = 20000 } = options;
             const controller = new AbortController();
@@ -119,7 +121,7 @@ export default {
             }
             let method = this.basket.id ? "PUT" : "POST";
             this.basket.userId = user.id;
-            this.fetchFunc("http://192.168.1.100:8080/baskets/", method, {
+            this.fetchFunc("https://tıktık.com:8443/api/baskets/", method, {
                 headers: {
                     "Authorization": localStorage.getItem("token")
                 }
@@ -139,7 +141,7 @@ export default {
         getUsersBasketByUserId() {
             let user = JSON.parse(localStorage.getItem("user"));
             return new Promise((resolve) => {
-                this.fetchFunc("http://192.168.1.100:8080/baskets/user/" + user.id, "GET", {
+                this.fetchFunc("https://tıktık.com:8443/api/baskets/user/" + user.id, "GET", {
                     headers: {
                         "Authorization": localStorage.getItem("token")
                     }

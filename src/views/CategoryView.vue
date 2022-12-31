@@ -70,7 +70,7 @@ export default {
     },
     getAllVendorCategories() {
       return new Promise((resolve) => {
-        this.fetchFunc("http://192.168.1.100:8080/public/products/vendor/mainCategory/" + this.$route.params.module + "/" + this.$route.params.vendorId, "GET", {}, {}).then(res => {
+        this.fetchFunc("https://tıktık.com:8443/api/public/products/vendor/mainCategory/" + this.$route.params.module + "/" + this.$route.params.vendorId, "GET", {}, {}).then(res => {
           this.categories = res;
           resolve(res);
         })

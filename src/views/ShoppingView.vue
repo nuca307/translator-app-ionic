@@ -27,6 +27,17 @@
         </template>
         <div v-else class="alert alert-warning">Henüz Bu Bölgede Hizmet Vermiyoruz. Bölge: {{ address.district }}</div>
       </div>
+      <h3 class="mt-4 text-center" style="color:#198754;">Sizler İçin Çalışıyoruz</h3>
+      <div class="row mt-2 text-center">
+        <div class="col-12 col-md-6 col-lg-5 col-xl-4 offset-lg-1 offset-xl-2 p-2">
+          <img src="/assets/tanitim1-ad.png" alt="Her Yerden Kolayca Sipariş Ver. Evinizden, iş yerinizden hatta istediğiniz her yerden kolayca sipariş
+                    verebilirsiniz." style="max-width: 100%;">
+        </div>
+        <div class="col-12 col-md-6 col-lg-5 col-xl-4 p-2">
+          <img src="/assets/tanitim2-ad.png" alt="Dakikalar İçinde Ürünü Teslim Al Tedarikçiden teslim aldığımız ürünlerinizi ve yemeklerinizi dakikalar içerisinde
+                    güleryüzlü ekibimizden teslim alabilirsiniz. " style="max-width: 100%;">
+        </div>
+      </div>
     </div>
     <addresses-modal v-show="!isAddressSet" :addresses="addresses"></addresses-modal>
   </main>
@@ -107,7 +118,7 @@ export default {
     },
     getAllVendors(district) {
       return new Promise((resolve) => {
-        this.fetchFunc("http://192.168.1.100:8080/public/vendors/active/" + district + "/shopping", "GET", {}).then(res => {
+        this.fetchFunc("https://tıktık.com:8443/api/public/vendors/active/" + district + "/shopping", "GET", {}).then(res => {
           this.vendors = res;
           resolve(res);
         })
@@ -116,7 +127,7 @@ export default {
     getUsersAddressByUserId() {
       return new Promise((resolve) => {
         let user = JSON.parse(localStorage.getItem("user"));
-        this.fetchFunc("http://192.168.1.100:8080/addresses/user/" + user.id, "GET", {}).then(res => {
+        this.fetchFunc("https://tıktık.com:8443/api/addresses/user/" + user.id, "GET", {}).then(res => {
           this.addresses = res;
           resolve(res);
         })
@@ -124,7 +135,7 @@ export default {
     },
     getAllAnnouncements() {
       return new Promise((resolve) => {
-        this.fetchFunc("http://192.168.1.100:8080/public/announcements", "GET", {}).then(res => {
+        this.fetchFunc("https://tıktık.com:8443/api/public/announcements", "GET", {}).then(res => {
           this.announcements = res;
           resolve(res);
         })

@@ -110,7 +110,7 @@ export default {
         },
         submitHandle() {
             if (!this.validateUser()) return;
-            this.fetchFunc("http://192.168.1.100:8080/auth/register", "POST", {}, this.info).then((res) => {
+            this.fetchFunc("https://tıktık.com:8443/api/auth/register", "POST", {}, this.info).then((res) => {
                 if (res.status == "201" || res.status == "204") {
                     this.alert = res.message
                     this.$router.push("/giris-yap")

@@ -374,7 +374,7 @@ export default {
         },
         getAllProvinces() {
             return new Promise((resolve) => {
-                this.fetchFunc("http://192.168.1.100:8080/public/provinces", "GET", {}).then(res => {
+                this.fetchFunc("https://tıktık.com:8443/api/public/provinces", "GET", {}).then(res => {
                     this.provinces = res;
                     resolve(res);
                 })
@@ -390,7 +390,7 @@ export default {
         },
         getAllDistrictsByProvinceId(province) {
             return new Promise((resolve) => {
-                this.fetchFunc("http://192.168.1.100:8080/public/districts/" + province.id, "GET", {}).then(res => {
+                this.fetchFunc("https://tıktık.com:8443/api/public/districts/" + province.id, "GET", {}).then(res => {
                     this.districts = res;
                     resolve(res);
                 })
