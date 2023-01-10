@@ -27,6 +27,7 @@
         </template>
         <div v-else class="alert alert-warning">Henüz Bu Bölgede Hizmet Vermiyoruz. Bölge: {{ address.district }}</div>
       </div>
+      <hr>
       <h3 class="mt-4 text-center" style="color:#198754;">Sizler İçin Çalışıyoruz</h3>
       <div class="row mt-2 text-center">
         <div class="col-12 col-md-6 col-lg-5 col-xl-4 offset-lg-1 offset-xl-2 p-2">
@@ -39,14 +40,14 @@
         </div>
       </div>
     </div>
-    <addresses-modal v-show="!isAddressSet" :addresses="addresses"></addresses-modal>
+    <address-modal v-show="!isAddressSet" :addresses="addresses"></address-modal>
   </main>
 </template>
 
 <script>
 import AnnouncementSlider from '../components/AnnouncementSlider.vue';
 import CardVue from "../components/CardVue.vue";
-import AddressesModal from '../components/AddressModal.vue';
+import AddressModal from '../components/AddressModal.vue';
 import { Modal } from 'bootstrap';
 
 export default {
@@ -54,7 +55,7 @@ export default {
   components: {
     AnnouncementSlider,
     CardVue,
-    AddressesModal,
+    AddressModal
   },
   data() {
     return {
@@ -127,7 +128,7 @@ export default {
     getUsersAddressByUserId() {
       return new Promise((resolve) => {
         let user = JSON.parse(localStorage.getItem("user"));
-        this.fetchFunc("https://tıktık.com:8443/api/addresses/user/" + user.id, "GET", {}).then(res => {
+        this.fetchFunc("https://tıktık.com:8443/api/addresses/user/isActive/" + user.id, "GET", {}).then(res => {
           this.addresses = res;
           resolve(res);
         })
@@ -151,7 +152,7 @@ export default {
 
     let user = JSON.parse(localStorage.getItem("user"));
     if (user) {
-      this.getUsersAddressByUserId().then(() => {
+      this.getUsersAddressByUserId().then((res) => {
         if (!this.isAddressSet) {
           this.modal.show();
         } else {

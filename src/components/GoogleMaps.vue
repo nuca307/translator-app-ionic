@@ -57,8 +57,10 @@
                             placeholder="Tarif-Ör: Belediyenin 100mt. İlerisi" v-model="address.directions"></textarea>
                     </div>
                     <div class="d-flex justify-content-between mt-2">
-                        <button class="btn btn-outline-primary" @click="selectAddress()">Sadece Seç</button>
-                        <button class="btn btn-primary" @click="selectAddress(true)">Seç ve Kaydet</button>
+                        <button class="btn btn-outline-primary" @click="selectAddress()" v-if="!wasLoggedIn">Sadece
+                            Seç</button>
+                        <button class="btn btn-primary" @click="selectAddress(true)" v-else>Seç ve
+                            Kaydet</button>
                     </div>
                 </div>
             </div>
@@ -97,14 +99,13 @@ export default {
             }
         };
     },
-
-    /* beforeMount() {
-         const gScript = document.createElement("script");
-         gScript.setAttribute("src", "https://maps.googleapis.com/maps/api/js?key=AIzaSyCcb6TmUku-pvvNqKYYNo_aJZwnpPqw5Lw&libraries=places");
-         gScript.setAttribute("defer", "");
-         gScript.setAttribute("async", "");
-         document.head.appendChild(gScript);
-     },*/
+    computed: {
+        wasLoggedIn() {
+            let user = localStorage.getItem("user");
+            if (user) return true;
+            return false;
+        },
+    },
     mounted() {
 
         /****** İmleç Pozisyonunu Ayarlama-Biter ******/

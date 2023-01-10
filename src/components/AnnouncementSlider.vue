@@ -15,15 +15,16 @@
                 v-if="announcements.length">
                 <div v-for="(announcement, announcementIndex) of announcements" class="carousel-item text-center"
                     :class="{
-    active: selectedIndex == announcementIndex,
-    'carousel-item-left': direction == 'right' && (selectedIndex == announcementIndex || selectedIndex + 1 == announcementIndex),
-    'carousel-item-right': direction == 'left' && (selectedIndex == announcementIndex || selectedIndex - 1 == announcementIndex),
-    'carousel-item-next': direction == 'right' && selectedIndex == announcementIndex,
-    'carousel-item-prev': direction == 'left' && selectedIndex == announcementIndex,
-}" :key="announcement">
+                        active: selectedIndex == announcementIndex,
+                        'carousel-item-left': direction == 'right' && (selectedIndex == announcementIndex || selectedIndex + 1 == announcementIndex),
+                        'carousel-item-right': direction == 'left' && (selectedIndex == announcementIndex || selectedIndex - 1 == announcementIndex),
+                        'carousel-item-next': direction == 'right' && selectedIndex == announcementIndex,
+                        'carousel-item-prev': direction == 'left' && selectedIndex == announcementIndex,
+                    }" :key="announcement">
                     <div class="d-flex justify-content-center">
                         <div class="ratio ratio-16x9" style="max-width: 1000px;">
-                            <img :src="announcement.imageUrl" alt="announcement" class="carousel-img" />
+                            <img :src="'https://tıktık.com:8443/api' + announcement.imageUrl" alt="announcement"
+                                class="carousel-img" />
                         </div>
                         <div v-if="announcement.targetUrl" class="carousel-caption">
                             <a :href="announcement.targetUrl" class="btn btn-primary"

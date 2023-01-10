@@ -19,7 +19,6 @@ export default {
     props: ["links"],
     components: {
         RouterLink,
-
     },
     methods: {
     }

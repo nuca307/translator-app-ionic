@@ -70,7 +70,8 @@ export default {
     },
     getAllVendorCategories() {
       return new Promise((resolve) => {
-        this.fetchFunc("https://tıktık.com:8443/api/public/products/vendor/mainCategory/" + this.$route.params.module + "/" + this.$route.params.vendorId, "GET", {}, {}).then(res => {
+        let url = this.$route.params.module == "shopping" ? "https://tıktık.com:8443/api/public/products/vendor/mainCategory/" : "https://tıktık.com:8443/api/public/foods/vendor/mainCategory/"
+        this.fetchFunc(url + this.$route.params.module + "/" + this.$route.params.vendorId, "GET", {}, {}).then(res => {
           this.categories = res;
           resolve(res);
         })

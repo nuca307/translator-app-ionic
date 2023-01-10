@@ -2,7 +2,7 @@
   <main>
     <div>
       <div class="row mt-2">
-        <Breadcrump class="d-none d-md-block" :links="links"></Breadcrump>
+        <bread-crump class="d-none d-md-block" :links="links"></bread-crump>
         <div class="d-none d-md-block col-md-3 col-xl-2">
 
           <div class="list-group sticky-top" style="top:3rem;">
@@ -16,13 +16,13 @@
           </div>
         </div>
         <div class="col-12 d-md-none sticky-top" style="overflow-x: auto ;">
-          <Breadcrump :links="links"></Breadcrump>
+          <bread-crump :links="links"></bread-crump>
           <div class="list-group list-group-horizontal my-2">
             <button type="button" class="list-group-item small list-group-item-action"
               :class="{ active: categoryFilter == 0 }" :aria-current="categoryFilter == 0" @click="setFilter(0)">
               TÜMÜ
             </button>
-            <button type="button" class="list-group-item list-group-item-action" v-for="category of categories"
+            <button type="button" class="list-group-item small list-group-item-action" v-for="category of categories"
               :key="category" v-text="category.name" :class="{ active: categoryFilter == category.id }"
               :aria-current="categoryFilter == category.id" @click="setFilter(category.id)"></button>
           </div>
@@ -37,16 +37,14 @@
 </template>
 
 <script>
-import Card from "../components/Card.vue";
 import FoodTable from '../components/FoodTable.vue';
-import Breadcrump from "../components/Breadcrump.vue";
+import BreadCrump from "../components/BreadCrump.vue";
 
 export default {
   props: ["pageIndex"],
   components: {
-    Card,
     FoodTable,
-    Breadcrump
+    BreadCrump
   },
   data() {
     return {
@@ -76,20 +74,12 @@ export default {
       ],
       links: [
         { to: "/", text: "Anasayfa" },
-        { to: "/kategoriler/foods/" + this.$route.params.vendorId, text: "Kategoriler" },
+        { to: "/kategoriler/food/" + this.$route.params.vendorId, text: "Kategoriler" },
         { to: "", text: "Ürünler" }
       ]
     }
   },
   methods: {
-    /*getAllVendorCategories() {
-      return new Promise((resolve) => {
-        fetchFunc("https://tıktık.com:8443/api/public/foods/vendor/mainCategory/" + this.$route.params.module + "/" + this.$route.params.vendorId, "GET", {}, {}).then(res => {
-          this.foods = res;
-          resolve(res);
-        })
-      });
-    },*/
     fetchFunc(resource, method, options = {}, body) {
       const { timeout = 20000 } = options;
       const controller = new AbortController();
@@ -121,6 +111,14 @@ export default {
       });
       return response;
     },
+    /*getAllVendorCategories() {
+      return new Promise((resolve) => {
+        fetchFunc("https://tıktık.com:8443/api/public/foods/vendor/mainCategory/" + this.$route.params.module + "/" + this.$route.params.vendorId, "GET", {}, {}).then(res => {
+          this.foods = res;
+          resolve(res);
+        })
+      });
+    },*/
     setFilter(filter) {
       this.categoryFilter = filter;
       this.filterFoods();
@@ -137,7 +135,6 @@ export default {
       return new Promise((resolve) => {
         this.fetchFunc("https://tıktık.com:8443/api/public/foods/vendor/mainCategoryId/" + this.$route.params.category + "/" + this.$route.params.vendorId, "GET", {}, {}).then(res => {
           this.foods = res;
-          console.log("a", res);
           let categories = [];
           this.foods.forEach(food => {
             if (food.subCategory) {

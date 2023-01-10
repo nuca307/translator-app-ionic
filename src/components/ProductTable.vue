@@ -14,7 +14,6 @@
 
 .product-item {
     display: grid;
-    grid-template-columns: 2fr 2fr 1fr 2fr;
 }
 
 .product-item div {
@@ -65,10 +64,11 @@
                 <button @click="modifyData()" class="btn btn-primary ml-2">Ara</button>
             </div>
         </div>
-        <div style="width: 100%;overflow: scroll;">
+        <div style="width: 100%;overflow: auto;">
             <ul class="list-group" v-if="isMobile">
                 <li class="list-group-item product-item text-center" v-for="(product, index) of modifiedData"
-                    :key="product">
+                    :key="product"
+                    :style="wasLoggedIn ? 'grid-template-columns: 2fr 2fr 1fr 2fr;' : 'grid-template-columns: 2fr 2fr 1fr;'">
                     <slider-vue :photos="product.images" :unique="'slider' + index">
                     </slider-vue>
                     <div v-text="product.name"></div>
@@ -150,8 +150,8 @@
                 :disabled="pagination.currentPageIndex <= 0">...</button>
 
             <button class="btn" v-for="index in pagination.pageCount" :key="index" v-text="index" v-show="(pagination.currentPageIndex - 1 < index && index < pagination.currentPageIndex + 5)
-    || (pagination.currentPageIndex < 2 && index <= 5)
-    || (pagination.currentPageIndex - 4 < index && index < pagination.currentPageIndex)"
+            || (pagination.currentPageIndex < 2 && index <= 5)
+            || (pagination.currentPageIndex - 4 < index && index < pagination.currentPageIndex)"
                 :class="index - 1 == pagination.currentPageIndex ? 'btn-primary' : 'btn-outline-primary'"
                 @click="goToPage(index - 1)"></button>
 
@@ -202,8 +202,7 @@ export default {
     methods: {
         basketCount(product) {//watch denenebilir
             if (!this.basketSummary) return 0;
-            let foundProduct = this.basketSummary[product.id];
-            return foundProduct ? foundProduct : 0;
+            let foundProduct = this.basketSummary['shopping' + product.id]; return foundProduct ? foundProduct : 0;
         },
         addItem(product) {
             this.emitter.emit("basket_add_to_product", product);
@@ -270,13 +269,13 @@ export default {
             this.sliceData();
         },
         filterData(currentPageIndex = 0) {
-            let filterTurkish = this.filter.turkishToLower();
+            let filterTurkish = this.turkishToLower(this.filter);
             let filterGeneral = this.filter.toLowerCase();
             this.filteredData = [];
             for (let datum of this.data) {
                 let result = false;
                 for (let column of this.columns) {
-                    result = result || this.getDataFromObject(datum, column).toString().toLowerCase().includes(filterGeneral) || this.getDataFromObject(datum, column).toString().turkishToLower().includes(filterTurkish);
+                    result = result || this.getDataFromObject(datum, column).toString().toLowerCase().includes(filterGeneral) || this.turkishToLower(this.getDataFromObject(datum, column).toString()).includes(filterTurkish);
                     if (result) break;
                 }
                 if (result) {
@@ -333,13 +332,8 @@ export default {
         },
         emitRowData(datum) {
             this.emitter.emit(this.unique, JSON.parse(JSON.stringify(datum)));
-        }
-    },
-    mounted() {
-
-        /****** İmleç Pozisyonunu Ayarlama-Biter ******/
-        String.prototype.turkishToLower = function () {
-            var string = this;
+        },
+        turkishToLower(string) {
             var letters = {
                 "İ": "i",
                 "I": "ı",
@@ -353,10 +347,8 @@ export default {
                 return letters[letter];
             })
             return string.toLowerCase();
-        }
-
-        String.prototype.turkishToUpper = function () {
-            var string = this;
+        },
+        turkishToUpper(string) {
             var letters = {
                 "i": "İ",
                 "ş": "Ş",
@@ -371,6 +363,8 @@ export default {
             })
             return string.toUpperCase();
         }
+    },
+    mounted() {
         this.isMobile = window.innerWidth < 992;
         window.addEventListener("resize", this.checkIsMobile);
         this.isLoaded = false;

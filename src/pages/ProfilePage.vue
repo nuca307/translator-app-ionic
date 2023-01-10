@@ -1,17 +1,17 @@
 <template>
     <main-layout pageIndex="3">
-        <basket-view />
+        <profile-view />
     </main-layout>
 </template>
   
 <script>
 import MainLayout from '../layouts/MainLayout.vue';
-import BasketView from '../views/BasketView.vue';
+import ProfileView from '../views/ProfileView.vue';
 
 export default {
     components: {
         MainLayout,
-        BasketView
+        ProfileView
     },
     data() {
         return {}

@@ -23,6 +23,16 @@
     justify-content: center;
 }
 
+.food-item {
+    display: grid;
+}
+
+.food-item div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 
 .item-count,
 .item-count-button {
@@ -42,16 +52,31 @@
 }
 
 /* Hide scrollbar for Chrome, Safari and Opera */
-.food-variant-list::-webkit-scrollbar {
+.food-variant-list::-webkit-scrollbar,
+.card-footer::-webkit-scrollbar {
     display: none;
 }
 
 /* Hide scrollbar for IE, Edge and Firefox */
-.food-variant-list {
+.food-variant-list,
+.card-footer {
     -ms-overflow-style: none;
     /* IE and Edge */
     scrollbar-width: none;
     /* Firefox */
+}
+
+/* Variantları yukarı kaydırmak için */
+#chk:checked~.signup {
+    transform: translateY(-500px);
+}
+
+#chk:checked~.signup label {
+    transform: scale(1);
+}
+
+#chk:checked~.login label {
+    transform: scale(.6);
 }
 </style>
 <template>
@@ -64,7 +89,6 @@
                 <label>Limit: </label>
                 <select v-model.number="selectedLimit" @change="setSelectedLimit" class="form-select"
                     style="min-width: 5rem;">
-                    <option>1</option>
                     <option>5</option>
                     <option>10</option>
                     <option>25</option>
@@ -83,16 +107,29 @@
                 <li class="list-group-item" style="height: 200px; overflow: hidden;"
                     v-for="(food, index) of modifiedData" :key="food">
                     <div class="row h-100 food-variant-list" style="overflow-y: auto;">
-                        <div style="font-weight: bold;" v-text="food.name"></div>
-                        <slider class="col-3" :photos="food.images" :unique="'slider' + index">
-                        </slider>
-                        <div class="col-9 ">
-                            <div class="row align-items-center py-1" style="border-bottom: 1px solid #198754;"
-                                v-for="(variant, index) of food.foodVariants">
-                                <div class="col-2" v-text="variant.name"></div>
-                                <div class="col-2" v-text="variant.unit"></div>
+                        <div class="col-lg-4 card mb-3" style="max-height:75%">
+                            <div class="row g-0" style="overflow: hidden;">
+                                <div class="col-6 col-sm-4 col-lg-12">
+                                    <slider-vue class="img-fluid rounded-start" :photos="food.images"
+                                        :unique="'slider' + index">
+                                    </slider-vue>
+                                </div>
+                                <div class="col-6 col-sm-8 col-lg-12">
+                                    <div class="card-body">
+                                        <div><small style="font-weight: bold;" v-text="food.name"></small></div>
+                                        <small v-text="food.detail"></small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-8">
+                            <div class="align-items-center py-1 food-item" style="border-bottom: 1px solid #198754;"
+                                v-for="(variant, index) of food.foodVariants"
+                                :style="wasLoggedIn ? 'grid-template-columns: 2fr 2fr 1fr 2fr;' : 'grid-template-columns: 2fr 2fr 1fr;'">
+                                <div v-text="variant.name"></div>
+                                <div v-text="variant.unit"></div>
                                 <template v-if="variant.discount && variant.discountedPrice + ' ₺'">
-                                    <div class="col-2 d-flex" style="flex-direction: column;">
+                                    <div class="d-flex" style="flex-direction: column;">
                                         <s class="text-muted"><small v-text="variant.price + '₺'"></small></s>
 
                                         <svg xmlns="http://www.w3.org/2000/svg" style="width: 2rem;"
@@ -112,12 +149,15 @@
                                         <div v-text="variant.discountedPrice + '₺'"></div>
                                     </div>
                                 </template>
-                                <span class="col-2" v-else v-text="variant.price + '₺'"></span>
+                                <span v-else v-text="variant.price + '₺'"></span>
 
-                                <div class="d-flex align-items-center justify-content-end col-6">
-                                    <button class="item-count-button" @click="removeItem(food)">-</button>
-                                    <span type="number" class="item-count" v-text="basketCount(food)"></span>
-                                    <button class="item-count-button" @click="addItem(food)">+</button>
+                                <div class="d-flex align-items-center justify-content-end col-6" v-if="wasLoggedIn">
+                                    <button class="item-count-button" @click="removeFoodItem(food, variant)">-</button>
+                                    <span class="position-relative">
+                                        <span type="number" class="item-count"
+                                            v-text="basketCount(food, variant)"></span>
+                                    </span>
+                                    <button class="item-count-button" @click="addFoodItem(food, variant)">+</button>
                                 </div>
                             </div>
                         </div>
@@ -127,17 +167,21 @@
             <div class="row" v-else>
                 <div class="col-md-6 col-lg-4 col-xl-3 d-flex" v-for="(food, index) of modifiedData" :key="food">
                     <div class="card mt-3 w-100" style="overflow: hidden;">
-                        <slider :photos="food.images" :unique="'slider' + index">
-                        </slider>
+                        <slider-vue :photos="food.images" :unique="'slider' + index">
+                        </slider-vue>
                         <div class="card-body">
                             <div style="font-weight: bold;" v-text="food.name">
                             </div>
+                            <span v-text="food.detail"></span>
                         </div>
-                        <div class="card-footer align-items-center justify-content-between">
-                            <div class="row align-items-center" v-for="(variant, index) of food.foodVariants">
+                        <div class="card-footer align-items-center justify-content-between text-center"
+                            style="height:2rem; overflow: auto;">
+                            <!--input type="checkbox" :id="'chk' + index" aria-hidden="true" @click="variantControl()"
+                                hidden>
+                            <label-- :for="'chk' + index" aria-hidden="true" class="w-100">Fiyatları Göster</label-->
+                            <div class="row align-items-center mb-2" v-for="(variant, index) of food.foodVariants">
                                 <div class="d-flex align-items-center justify-content-between">
                                     <span v-text="variant.name"></span>
-                                    <span class="badge badge-pill bg-danger" v-text="variant.unit"></span>
                                     <div class="d-flex" style="flex-direction: column;">
                                         <template v-if="variant.discount && variant.discountedPrice + ' ₺'">
                                             <s class="text-muted"><small v-text="variant.price + ' ₺'"></small></s>
@@ -155,16 +199,18 @@
                                                         v-text="variant.discount + '%'"></tspan>
                                                 </text>
                                             </svg>
-                                            <div v-text="variant.discountedPrice"></div>
+                                            <div v-text="variant.discountedPrice + '₺'"></div>
                                         </template>
                                         <span v-else v-text="variant.price + '₺'"></span>
                                     </div>
-                                    <div class="d-flex align-items-center">
-                                        <button class="item-count-button" @click="removeItem(food)">-</button>
+                                    <div class="d-flex align-items-center" v-if="wasLoggedIn">
+                                        <button class="item-count-button"
+                                            @click="removeFoodItem(food, variant)">-</button>
                                         <span class="position-relative">
-                                            <span type="number" class="item-count" v-text="basketCount(food)"></span>
+                                            <span type="number" class="item-count"
+                                                v-text="basketCount(food, variant)"></span>
                                         </span>
-                                        <button class="item-count-button" @click="addItem(food)">+</button>
+                                        <button class="item-count-button" @click="addFoodItem(food, variant)">+</button>
                                     </div>
                                 </div>
                             </div>
@@ -173,15 +219,15 @@
                 </div>
             </div>
         </div>
-        <div>
+        <div class="mt-2">
             <button class="btn btn-outline-primary" @click="prevPage()"
                 :disabled="pagination.currentPageIndex <= 0">Geri</button>
             <button v-if="pagination.pageCount > 5" class="btn btn-outline-primary" @click="prevPage()"
                 :disabled="pagination.currentPageIndex <= 0">...</button>
 
             <button class="btn" v-for="index in pagination.pageCount" v-text="index" v-show="(pagination.currentPageIndex - 1 < index && index < pagination.currentPageIndex + 5)
-    || (pagination.currentPageIndex < 2 && index <= 5)
-    || (pagination.currentPageIndex - 4 < index && index < pagination.currentPageIndex)"
+            || (pagination.currentPageIndex < 2 && index <= 5)
+            || (pagination.currentPageIndex - 4 < index && index < pagination.currentPageIndex)"
                 :class="index - 1 == pagination.currentPageIndex ? 'btn-primary' : 'btn-outline-primary'"
                 @click="goToPage(index - 1)"></button>
 
@@ -193,11 +239,11 @@
     </div>
 </template>
 <script>
-import Slider from "./Slider.vue";
+import SliderVue from "./SliderVue.vue";
 export default {
     props: ["columns", "data", "unique", "hasDetail"],
     components: {
-        Slider
+        SliderVue
     },
     inject: {
         basketSummary: 'basketSummary'
@@ -222,17 +268,40 @@ export default {
             isMobile: ""
         }
     },
+    computed: {
+        wasLoggedIn() {
+            let user = localStorage.getItem("user");
+            if (user) return true;
+            return false;
+        },
+    },
     methods: {
-        basketCount(food) {//watch denenebilir
+        variantControl() {
+            let elm = event.target;
+            if (elm.checked == true) {
+                elm.parentNode.style = "margin-top:-200px;background-color: #b6dfcc;transition: .8s ease-in-out;z-index: 99;";
+                event.explicitOriginalTarget.innerText = "Fiyatları Gizle";
+                setTimeout(() => {
+                    elm.parentNode.style = "height:auto;margin-top:-200px;background-color: #b6dfcc;transition: .8s ease-in-out;z-index: 99";
+                }, 800);
+            } else {
+                elm.parentNode.style = "margin-top:0px; background-color: rgba(0, 0, 0, 0.03);height:2rem;overflow: auto;transition: .8s ease-in-out;z-index: 99;";
+                event.explicitOriginalTarget.innerText = "Fiyatları Göster";
+            }
+        },
+        basketCount(food, variant) {//watch denenebilir
             if (!this.basketSummary) return 0;
-            let foundFood = this.basketSummary[food.id];
+            let foundFood = this.basketSummary['food' + variant.id];
             return foundFood ? foundFood : 0;
         },
-        addItem(food) {
-            this.emitter.emit("basket_add_to_food", food);
+        addFoodItem(food, variant) {
+            food.variant = JSON.parse(JSON.stringify(variant));
+            console.log("266-FoodTable: ", food);
+            this.emitter.emit("basket_add_to_food_variant", food);
         },
-        removeItem(food) {
-            this.emitter.emit("basket_remove_from_food", food);
+        removeFoodItem(food, variant) {
+            food.variant = JSON.parse(JSON.stringify(variant));
+            this.emitter.emit("basket_remove_from_food_variant", food);
         },
         checkIsMobile() {
             this.isMobile = window.innerWidth < 992;
@@ -293,13 +362,13 @@ export default {
             this.sliceData();
         },
         filterData(currentPageIndex = 0) {
-            let filterTurkish = this.filter.turkishToLower();
+            let filterTurkish = this.turkishToLower(this.filter);
             let filterGeneral = this.filter.toLowerCase();
             this.filteredData = [];
             for (let datum of this.data) {
                 let result = false;
                 for (let column of this.columns) {
-                    result = result || this.getDataFromObject(datum, column).toString().toLowerCase().includes(filterGeneral) || this.getDataFromObject(datum, column).toString().turkishToLower().includes(filterTurkish);
+                    result = result || this.getDataFromObject(datum, column).toString().toLowerCase().includes(filterGeneral) || this.turkishToLower(this.getDataFromObject(datum, column).toString()).includes(filterTurkish);
                     if (result) break;
                 }
                 if (result) {
@@ -356,6 +425,36 @@ export default {
         },
         emitRowData(datum) {
             this.emitter.emit(this.unique, JSON.parse(JSON.stringify(datum)));
+        },
+        turkishToLower(string) {
+            var letters = {
+                "İ": "i",
+                "I": "ı",
+                "Ş": "ş",
+                "Ğ": "ğ",
+                "Ü": "ü",
+                "Ö": "ö",
+                "Ç": "ç"
+            };
+            string = string.replace(/(([İIŞĞÜÇÖ]))/g, function (letter) {
+                return letters[letter];
+            })
+            return string.toLowerCase();
+        },
+        turkishToUpper(string) {
+            var letters = {
+                "i": "İ",
+                "ş": "Ş",
+                "ğ": "Ğ",
+                "ü": "Ü",
+                "ö": "Ö",
+                "ç": "Ç",
+                "ı": "I"
+            };
+            string = string.replace(/(([iışğüçö]))/g, function (letter) {
+                return letters[letter];
+            })
+            return string.toUpperCase();
         }
     },
     mounted() {
@@ -364,6 +463,7 @@ export default {
         this.isLoaded = false;
         this.selectedLimit = parseInt(localStorage.getItem("table_limit_of_" + this.unique) || 10);
         this.pagination.limit = this.selectedLimit;
+
     },
     unmounted() {
         window.removeEventListener("resize", this.checkIsMobile);

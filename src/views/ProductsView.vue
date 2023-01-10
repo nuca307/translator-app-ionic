@@ -28,7 +28,8 @@
           </div>
         </div>
         <div class="col-12 col-md-9 col-xl-10">
-          <product-table class="display" :data="filteredProducts" :columns="columns" unique="products_table">
+          <product-table class="display" :data="filteredProducts" :columns="columns" unique="products_table"
+            v-slot="slotData">
           </product-table>
         </div>
       </div>
@@ -137,7 +138,7 @@ export default {
               if (!categories.find(e => e.id == product.mainCategory.id)) {
                 categories.unshift(product.mainCategory)
               }
-            }
+            };
           });
           this.categories = categories;
           this.filterProducts();

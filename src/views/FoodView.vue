@@ -16,7 +16,7 @@
       </div>
       <div class="row mt-2">
         <span><i class="fa-solid fa-location-dot"></i>
-          Konum: <span v-text="address.title"></span>
+          <span v-text="address.title"></span>
           <button class="btn btn-sm" data-bs-toggle="modal" data-bs-target="#addresses_modal">Değiştir</button>
         </span>
       </div>
@@ -127,7 +127,7 @@ export default {
     getUsersAddressByUserId() {
       return new Promise((resolve) => {
         let user = JSON.parse(localStorage.getItem("user"));
-        this.fetchFunc("https://tıktık.com:8443/api/addresses/user/" + user.id, "GET", {}).then(res => {
+        this.fetchFunc("https://tıktık.com:8443/api/addresses/user/isActive/" + user.id, "GET", {}).then(res => {
           this.addresses = res;
           resolve(res);
         })
@@ -151,7 +151,7 @@ export default {
 
     let user = JSON.parse(localStorage.getItem("user"));
     if (user) {
-      this.getUsersAddressByUserId().then(() => {
+      this.getUsersAddressByUserId().then((res) => {
         if (!this.isAddressSet) {
           this.modal.show();
         } else {

@@ -3,10 +3,11 @@
         style="width: 100vw;height: 100vh;">
         <form action="">
             <div class="text-center">
-                <img src="/logo.png" alt="TıkTık" width="100" />
+                <img src="/assets/logo.png" alt="TıkTık" width="100" />
             </div>
 
-            <input class="form-control" v-model="info.name" type="text" placeholder="İsim" />
+            <input class="form-control" v-model="info.firstName" type="text" placeholder="Ad" />
+            <input class="form-control" v-model="info.lastName" type="text" placeholder="Soyad" />
             <input class="form-control" v-model="info.email" type="email" placeholder="Email" />
             <input class="form-control" v-model="info.phone" type="text" placeholder="Telefon" />
             <input class="form-control" v-model="info.password" type="password" placeholder="Şifre"
@@ -16,6 +17,10 @@
             <div class="text-center">
                 <button class="btn btn-success" @click.prevent="submitHandle">KAYIT OL</button>
             </div>
+            <div class="d-flex justify-content-between">
+                <RouterLink to="/giris-yap">Giriş Yap</RouterLink>
+                <RouterLink to="/">Kaydolmadan Devam Et</RouterLink>
+            </div>
             <div class="text-center">
                 <span class="text-danger" v-text="alert"></span>
             </div>
@@ -24,6 +29,7 @@
 </template>
 <script>
 import { IonPage } from '@ionic/vue';
+
 export default {
     components: {
         IonPage
@@ -31,7 +37,8 @@ export default {
     data() {
         return {
             info: {
-                name: "",
+                firstName: "",
+                lastName: "",
                 email: "",
                 phone: "",
                 password: "",
@@ -86,12 +93,20 @@ export default {
         },
         validateUser() {
             if (!this.passwordValidity) return;
-            if (!this.info.name) {
-                alert("İsim olmadan kayıt yapamazsınız");
+            if (!this.info.firstName) {
+                alert("Ad olmadan kayıt yapamazsınız");
                 return false;
             }
-            if (this.info.name.length < 3) {
-                alert("Geçerli bir isim giriniz");
+            if (!this.info.lastName) {
+                alert("Soyad olmadan kayıt yapamazsınız");
+                return false;
+            }
+            if (this.info.firstName.length < 3) {
+                alert("Geçerli bir ad giriniz");
+                return false;
+            }
+            if (this.info.lastName.length < 2) {
+                alert("Geçerli bir soyad giriniz");
                 return false;
             }
             if (!this.info.email) {
@@ -119,7 +134,7 @@ export default {
                     this.alert = res.message
                 }
             }).catch((err) => {
-                this.alert = err.message
+                this.showToast({}, err);
             })
         }
     }

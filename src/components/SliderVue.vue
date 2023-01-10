@@ -6,6 +6,11 @@
 .carousel-control-next-icon {
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%238bc2a8'%3e%3cpath d='M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e")
 }
+
+img {
+    max-width: 100%;
+    max-height: 100%;
+}
 </style>
 <template>
     <!-- Carousel -->
@@ -20,14 +25,14 @@
 
         <div class="carousel-inner">
             <div v-for="(photo, photoIndex) of photos" class="carousel-item text-center" :class="{
-    active: selectedIndex == photoIndex,
-    'carousel-item-left': direction == 'right' && (selectedIndex == photoIndex || selectedIndex + 1 == photoIndex),
-    'carousel-item-right': direction == 'left' && (selectedIndex == photoIndex || selectedIndex - 1 == photoIndex),
-    'carousel-item-next': direction == 'right' && selectedIndex == photoIndex,
-    'carousel-item-prev': direction == 'left' && selectedIndex == photoIndex,
-}" :key="photo">
+                active: selectedIndex == photoIndex,
+                'carousel-item-left': direction == 'right' && (selectedIndex == photoIndex || selectedIndex + 1 == photoIndex),
+                'carousel-item-right': direction == 'left' && (selectedIndex == photoIndex || selectedIndex - 1 == photoIndex),
+                'carousel-item-next': direction == 'right' && selectedIndex == photoIndex,
+                'carousel-item-prev': direction == 'left' && selectedIndex == photoIndex,
+            }" :key="photo">
                 <div class="ratio ratio-16x9">
-                    <img :src="photo" alt="photo" class="carousel-img" />
+                    <img :src="'https://tıktık.com:8443/api' + photo" alt="photo" class="carousel-img" />
                 </div>
             </div>
         </div>

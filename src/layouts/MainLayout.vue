@@ -1,7 +1,7 @@
 <template>
-    <ion-page class="container-fluid">
+    <ion-page class="container-fluid" style="overflow:auto;max-height: 100vh;min-height: 100vh;">
         <div class="row flex-nowrap">
-            <main class="col py-3" style="overflow:scroll;max-height: 100vh;">
+            <main class="col py-3">
                 <navbar :pageIndex="pageIndex" :basket="basket" :username="getUserName"></navbar>
                 <slot :basket="basket" />
                 <footer-vue></footer-vue>
@@ -63,7 +63,7 @@ export default {
     computed: {
         getUserName() {
             let user = localStorage.getItem("user");
-            let username = user ? JSON.parse(user).name : "";
+            let username = user ? (JSON.parse(user).firstName + " " + JSON.parse(user).lastName) : "";
             return username;
         }
     },
@@ -102,7 +102,7 @@ export default {
         connectToWebSocket() {
             let user = JSON.parse(localStorage.getItem("user"));
             if (user) {
-                let wsURI = "ws://tıktık.com:8080/api/socket/purchaseOrder/9?auth=" + localStorage.getItem("token");
+                let wsURI = "wss://tıktık.com:8443/api/socket/purchaseOrder?auth=" + localStorage.getItem("token");
 
                 if (this.websocket != undefined && this.websocket.readyState === WebSocket.OPEN) {
                     this.websocket.close();
@@ -150,10 +150,59 @@ export default {
                 })
             });
         },
+        addFood(food) {
+            let item;
+            if (this.basket.basketItems)
+                item = this.basket.basketItems.find(e => e.productId == food.variant.id && e.moduleName == 'food');
+            else
+                this.basket.basketItems = [];
+
+            if (item) {
+                item.amount = item.amount ? item.amount + 1 : 1;
+                this.onBasketCount += item.amount;
+            } else {
+                this.basket.basketItems.push({
+                    amount: 1,
+                    image: food.images[0],
+                    name: food.name + "/" + food.variant.name + " " + food.variant.unit,
+                    price: food.variant.price,
+                    discount: food.variant.discount,
+                    discountedPrice: food.variant.discountedPrice,
+                    productId: food.variant.id,
+                    unit: food.variant.unit,
+                    vendor: { id: food.vendor.id },
+                    moduleName: food.mainCategory.moduleName,
+                    customerNote: ""
+                });
+            }
+
+            this.setBasketSummary();
+            this.setUsersBasket();
+        },
+        removeFood(food) {
+            let itemIndex = this.basket.basketItems.findIndex(e => e.productId == food.variant.id && e.moduleName == 'food');
+            if (itemIndex > -1) {
+                let item = this.basket.basketItems[itemIndex];
+                if (item.amount > 0) {
+                    item.amount--;
+                } else {
+                    this.basket.basketItems.splice(itemIndex, 1);
+                    delete this.basketSummary[item.moduleName + item.productId];
+                }
+
+                if (item.amount == 0) {
+                    this.basket.basketItems.splice(itemIndex, 1);
+                    delete this.basketSummary[item.moduleName + item.productId];
+                } else {
+                    this.setBasketSummary();
+                }
+                this.setUsersBasket();
+            }
+        },
         addProduct(product) {
             let item;
             if (this.basket.basketItems)
-                item = this.basket.basketItems.find(e => e.productId == product.id);
+                item = this.basket.basketItems.find(e => e.productId == product.id && e.moduleName == 'shopping');
             else
                 this.basket.basketItems = [];
 
@@ -166,9 +215,13 @@ export default {
                     image: product.images[0],
                     name: product.name,
                     price: product.price,
+                    discount: product.discount,
+                    discountedPrice: product.discountedPrice,
                     productId: product.id,
                     unit: product.unit,
                     vendor: { id: product.vendor.id },
+                    moduleName: product.mainCategory.moduleName,
+                    customerNote: ""
                 });
             }
 
@@ -176,27 +229,27 @@ export default {
             this.setUsersBasket();
         },
         removeProduct(product) {
-            let itemIndex = this.basket.basketItems.findIndex(e => e.productId == product.id);
+            let itemIndex = this.basket.basketItems.findIndex(e => e.productId == product.id && e.moduleName == 'shopping');
             if (itemIndex > -1) {
                 let item = this.basket.basketItems[itemIndex];
                 if (item.amount > 0) {
                     item.amount--;
                 } else {
                     this.basket.basketItems.splice(itemIndex, 1);
-                    delete this.basketSummary[item.productId];
+                    delete this.basketSummary[item.moduleName + item.productId];
                 }
 
                 if (item.amount == 0) {
                     this.basket.basketItems.splice(itemIndex, 1);
-                    delete this.basketSummary[item.productId];
+                    delete this.basketSummary[item.moduleName + item.productId];
                 } else {
                     this.setBasketSummary();
                 }
+                this.setUsersBasket();
             }
-            this.setUsersBasket();
         },
         addItem(item) {
-            let foundItem = this.basket.basketItems.find(e => e.productId == item.productId);
+            let foundItem = this.basket.basketItems.find(e => e.productId == item.productId && e.moduleName == item.moduleName);
 
             foundItem.amount++;
 
@@ -205,14 +258,14 @@ export default {
             this.setBasketInfo();
         },
         removeItem(item) {
-            let itemIndex = this.basket.basketItems.findIndex(e => e.productId == item.productId);
+            let itemIndex = this.basket.basketItems.findIndex(e => e.productId == item.productId && e.moduleName == item.moduleName);
             let foundItem = this.basket.basketItems[itemIndex];
 
             foundItem.amount--;
 
             if (foundItem.amount <= 0) {
                 this.basket.basketItems.splice(itemIndex, 1);
-                delete this.basketSummary[item.productId];
+                delete this.basketSummary[item.moduleName + item.productId];
             }
             this.setBasketSummary();
             this.setUsersBasket();
@@ -221,7 +274,7 @@ export default {
         },
         setBasketSummary() {
             this.basket.basketItems.forEach(item => {
-                this.basketSummary[item.productId] = item.amount;
+                this.basketSummary[item.moduleName + item.productId] = item.amount;
             });
         },
         setBasketInfo() {
@@ -280,6 +333,12 @@ export default {
         this.emitter.on("basket_remove_from_product", (product) => {
             this.removeProduct(product);
         })
+        this.emitter.on("basket_add_to_food_variant", (food) => {
+            this.addFood(food);
+        })
+        this.emitter.on("basket_remove_from_food_variant", (food) => {
+            this.removeFood(food);
+        })
         this.emitter.on("basket_add_to_item", (item) => {
             this.addItem(item);
         })
@@ -310,6 +369,8 @@ export default {
         }
     },
     beforeUnmount() {
+        this.emitter.off("basket_add_to_food_variant");
+        this.emitter.off("basket_remove_from_food_variant");
         this.emitter.off("basket_add_to_product");
         this.emitter.off("basket_remove_from_product");
         this.emitter.off("basket_add_to_item");

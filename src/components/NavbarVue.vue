@@ -47,7 +47,7 @@
                         <li class="nav-item" v-if="wasLoggedIn">
                             <RouterLink :to="basketLink" class="btn btn-light position-relative" aria-current="page">
                                 Sepet
-                                <span class="badge bagde-sm rounded-pill text-light bg-success">
+                                <span class="badge bagde-sm rounded-pill text-light bg-success" v-if="pageIndex != 3">
                                     <span v-text="basketSize"></span>
                                 </span>
 
@@ -60,10 +60,13 @@
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" style="z-index: 1111;">
                                 <li class="nav-item">
-                                    <RouterLink to="/siparis" class="dropdown-item" aria-current="page"
-                                        :class="pageIndex == 3 ? 'text-white' : ''">Siparişlerim</RouterLink>
+                                    <RouterLink to="/siparis" class="dropdown-item" aria-current="page">Siparişlerim
+                                    </RouterLink>
                                 </li>
-                                <li><a class="dropdown-item" href="#">Profil</a></li>
+                                <li>
+                                    <RouterLink to="/profil" class="dropdown-item" aria-current="page">Profil
+                                    </RouterLink>
+                                </li>
                                 <li>
                                     <hr class="dropdown-divider">
                                 </li>

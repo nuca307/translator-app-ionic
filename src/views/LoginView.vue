@@ -3,7 +3,7 @@
         style="width: 100vw;height: 100vh;">
         <form action="">
             <div class="text-center">
-                <img src="/logo.png" alt="TıkTık" width="100" />
+                <img src="/assets/logo.png" alt="TıkTık" width="100" />
             </div>
             <input class="form-control" v-model="email" type="email" placeholder="Email" />
             <input class="form-control" v-model="password" type="password" placeholder="Şifre" />
@@ -23,6 +23,7 @@
 <script>
 import { RouterLink } from 'vue-router';
 import { IonPage } from '@ionic/vue';
+
 
 export default {
     components: {
@@ -74,7 +75,14 @@ export default {
                 "password": this.password
             }).then(res => {
                 if (res.status == 200) {
+                    if (res.authorized == "false") {
+                        this.alert = res.message;
+                        return;
+                    }
                     localStorage.setItem("token", res.token);
+                    localStorage.setItem("tokenExpirationTime", res.tokenExpirationTime);
+                    localStorage.setItem("refreshToken", res.refreshToken);
+                    localStorage.setItem("refreshTokenExpirationTime", res.refreshTokenExpirationTime);
                     localStorage.setItem("user", JSON.stringify(res.user));
                     const params = new Proxy(new URLSearchParams(window.location.search), {
                         get: (searchParams, prop) => searchParams.get(prop),
