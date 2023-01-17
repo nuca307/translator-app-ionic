@@ -393,8 +393,8 @@ export default {
           .then(data => {
             resolve(data);
           })
-          .catch(() => {
-            reject();
+          .catch((err) => {
+            reject(err);
           })
           .finally(() => {
             clearTimeout(AbortTimer);
@@ -521,6 +521,8 @@ export default {
       });
     },
     setUsersOrder() {
+      let btn = event.target;
+      btn.setAttribute("disabled", "true");
       if (this.paymentMethod == "Kredi Kartı") {
         if (this.paymentStatus != "success") {
           alert("Ödemeniz Tamamlanmamış Görünüyor.\nBir Problem Olduğunu Düşünüyorsanız TıkTık ile İletişime Geçebilirsiniz.");
@@ -552,15 +554,18 @@ export default {
       this.fetchFunc("https://tıktık.com:8443/api/purchaseOrders/batch/" + user.id, "POST", {},
         orders
       ).then(res => {
-        //this.order = res;
         orders.forEach(order => {
           this.emitter.emit("send_websocket_message",
             `orderId=${order.id}&status=${order.status}&process=create&message=Yeni Sipariş`);
         })
-
         this.emitter.emit("paymentLock", false);
+        btn.removeAttribute("disabled");
         alert("Siparişiniz Oluşturuldu");
         this.$router.push('/siparis');
+
+      }).catch(err => {
+        alert("Hata Meydana Geldi\nLütfen Sipariş Bilgilerinizi ve Adres Bilgilerinizi Kontrol Ediniz");
+        btn.removeAttribute("disabled");
       })
     },
     setPaymentRequest() {
@@ -635,8 +640,7 @@ export default {
       }
     },
     messageHandler(event) {
-      //console.log("Message received from the child: " + JSON.stringify(event.data)); // Message received from child
-      if (typeof event.data == "string") {
+      if (typeof event.data == "string" && event.data.includes("paymentId")) {
         let message = {};
         event.data.split("&").forEach(part => {
           message[part.split("=")[0]] = part.split("=")[1];

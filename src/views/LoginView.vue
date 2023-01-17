@@ -12,7 +12,7 @@
             </div>
             <div class="d-flex justify-content-between">
                 <RouterLink to="/kayit-ol">Kayıt Ol</RouterLink>
-                <RouterLink to="/">Kaydolmadan Devam Et</RouterLink>
+                <RouterLink to="/" onclick="localStorage.clear()">Kaydolmadan Devam Et</RouterLink>
             </div>
             <div class="text-center">
                 <span class="text-danger" v-text="alert"></span>

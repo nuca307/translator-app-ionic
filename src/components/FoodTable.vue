@@ -16,6 +16,10 @@
     color: #0d6efd;
 }
 
+.food-item>* {
+    margin: 0 2px;
+}
+
 .food-item div {
     display: flex;
     align-items: center;
@@ -27,6 +31,7 @@
 .item-count-button {
     border: 1px solid var(--bs-primary);
     color: var(--bs-primary);
+    background-color: white;
     font-weight: 500;
     width: 2rem;
     height: 2rem;
@@ -116,7 +121,7 @@
                         <div class="col-lg-8">
                             <div class="align-items-center py-1 food-item" style="border-bottom: 1px solid #198754;"
                                 v-for="(variant, index) of food.foodVariants"
-                                :style="wasLoggedIn ? 'grid-template-columns: 2fr 1fr 1fr 2fr;' : 'grid-template-columns: 2fr 2fr 1fr;'">
+                                :style="wasLoggedIn ? 'grid-template-columns: 2fr 1fr 1fr 1fr;' : 'grid-template-columns: 2fr 2fr 1fr;'">
                                 <div v-text="variant.name"></div>
                                 <div v-text="variant.unit"></div>
                                 <template v-if="variant.discount && variant.discountedPrice + ' ₺'">
@@ -137,14 +142,15 @@
                                                     v-text="variant.discount + '%'"></tspan>
                                             </text>
                                         </svg>
-                                        <div v-text="variant.discountedPrice + '₺'"></div>
+                                        <div class="fw-bold" v-text="variant.discountedPrice + '₺'"></div>
                                     </div>
                                 </template>
-                                <span v-else v-text="variant.price + '₺'"></span>
+                                <span v-else class="fw-bold" v-text="variant.price + '₺'"></span>
 
                                 <div class="d-flex align-items-center justify-content-end" v-if="wasLoggedIn">
-                                    <button class="item-count-button" @click="removeFoodItem(food, variant)">-</button>
-                                    <span class="position-relative">
+                                    <button v-show="basketCount(food, variant)" class="item-count-button"
+                                        @click="removeFoodItem(food, variant)">-</button>
+                                    <span v-show="basketCount(food, variant)" class="position-relative">
                                         <span type="number" class="item-count"
                                             v-text="basketCount(food, variant)"></span>
                                     </span>
@@ -197,8 +203,9 @@
                                     <span v-else v-text="variant.price + '₺'"></span>
                                 </div>
                                 <div class="d-flex align-items-center" v-if="wasLoggedIn">
-                                    <button class="item-count-button" @click="removeFoodItem(food, variant)">-</button>
-                                    <span class="position-relative">
+                                    <button v-show="basketCount(food, variant)" class="item-count-button"
+                                        @click="removeFoodItem(food, variant)">-</button>
+                                    <span v-show="basketCount(food, variant)" class="position-relative">
                                         <span type="number" class="item-count"
                                             v-text="basketCount(food, variant)"></span>
                                     </span>

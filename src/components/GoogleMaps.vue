@@ -300,6 +300,7 @@ export default {
                             address: results[0].formatted_address,
                             longitude: parseFloat(pos.lng),
                             latitude: parseFloat(pos.lat),
+                            isActive: true
                         }
                     } else {
                         console.log('No results found');

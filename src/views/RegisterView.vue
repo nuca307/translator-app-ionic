@@ -8,7 +8,7 @@
 
             <input class="form-control" v-model="info.firstName" type="text" placeholder="Ad" />
             <input class="form-control" v-model="info.lastName" type="text" placeholder="Soyad" />
-            <input class="form-control" v-model="info.email" type="email" placeholder="Email" />
+            <input class="form-control" v-model="info.email" type="email" placeholder="Email" id="email" />
             <input class="form-control" v-model="info.phone" type="text" placeholder="Telefon" />
             <input class="form-control" v-model="info.password" type="password" placeholder="Şifre"
                 @change="checkPasswords()" />
@@ -19,7 +19,7 @@
             </div>
             <div class="d-flex justify-content-between">
                 <RouterLink to="/giris-yap">Giriş Yap</RouterLink>
-                <RouterLink to="/">Kaydolmadan Devam Et</RouterLink>
+                <RouterLink to="/" onclick="localStorage.clear()">Kaydolmadan Devam Et</RouterLink>
             </div>
             <div class="text-center">
                 <span class="text-danger" v-text="alert"></span>
@@ -92,7 +92,6 @@ export default {
             }
         },
         validateUser() {
-            if (!this.passwordValidity) return;
             if (!this.info.firstName) {
                 alert("Ad olmadan kayıt yapamazsınız");
                 return false;
@@ -113,6 +112,10 @@ export default {
                 alert("Email olmadan kayıt yapamazsınız");
                 return false;
             }
+            if (!this.validateEmail(this.info.email)) {
+                alert("Geçerli bir email olmadan kayıt yapamazsınız");
+                return false;
+            }
             if (!this.info.password) {
                 alert("Şifre olmadan kayıt yapamazsınız");
                 return false;
@@ -121,6 +124,7 @@ export default {
                 alert("Telefon olmadan kayıt yapamazsınız");
                 return false;
             }
+            if (!this.passwordValidity) return;
             return true;
         },
         submitHandle() {
@@ -136,6 +140,11 @@ export default {
             }).catch((err) => {
                 this.showToast({}, err);
             })
+        },
+        validateEmail(email) {
+            return email.match(
+                /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+            );
         }
     }
 }

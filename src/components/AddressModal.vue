@@ -3,10 +3,16 @@
     /* bug fix - no overlay */
     display: none;
 }
+
+.modal-content {
+    -webkit-box-shadow: 0px 0px 50px 15px rgba(25, 135, 84, 1);
+    -moz-box-shadow: 0px 0px 50px 15px rgba(25, 135, 84, 1);
+    box-shadow: 0px 0px 50px 15px rgba(25, 135, 84, 1);
+}
 </style>
 <template>
     <div class="modal fade" tabindex="-1" id="addresses_modal" ref="addressesModal">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Adres Seçimi</h5>
@@ -121,10 +127,10 @@ export default {
         setAddress(address) {
             if (!this.validateAddress(address)) return;
             let method = (address.id) ? "PUT" : "POST";
-            this.fetchFunc("https://tıktık.com:8443/api/addresses", method, {}, address).then(() => {
+            this.fetchFunc("https://tıktık.com:8443/api/addresses", method, {}, address).then((res) => {
                 this.showToast();
-                this.emitter.emit("addresses_modal", JSON.parse(JSON.stringify(address)));
-                localStorage.setItem("address", JSON.stringify(address));
+                this.emitter.emit("addresses_modal", JSON.parse(JSON.stringify(res)));
+                localStorage.setItem("address", JSON.stringify(res));
 
             }).catch((err) => {
                 this.showToast({}, err);

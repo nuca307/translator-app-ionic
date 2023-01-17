@@ -14,7 +14,11 @@
 
 .product-item {
     display: grid;
-    grid-template-columns: 2fr 2fr 1fr 2fr;
+    color: #0d6efd;
+}
+
+.product-item>* {
+    margin: 0 2px;
 }
 
 .product-item div {
@@ -26,7 +30,10 @@
 
 .item-count,
 .item-count-button {
-    border: 1px solid var(--bs-secondary);
+    border: 1px solid var(--bs-primary);
+    color: var(--bs-primary);
+    background-color: white;
+    font-weight: 500;
     width: 2rem;
     height: 2rem;
     border-radius: 50%;
@@ -51,7 +58,6 @@
                 <label>Limit: </label>
                 <select v-model.number="selectedLimit" @change="setSelectedLimit" class="form-select"
                     style="min-width: 5rem;">
-                    <option>1</option>
                     <option>5</option>
                     <option>10</option>
                     <option>25</option>
@@ -69,10 +75,10 @@
             <ul class="list-group" v-if="isMobile">
                 <li class="list-group-item product-item text-center" v-for="(product, index) of modifiedData"
                     :key="product"
-                    :style="wasLoggedIn ? 'grid-template-columns: 2fr 2fr 1fr 2fr;' : 'grid-template-columns: 2fr 2fr 1fr;'">
+                    :style="wasLoggedIn ? 'grid-template-columns: 2fr 2fr 1fr 1fr;' : 'grid-template-columns: 2fr 2fr 1fr;'">
                     <slider-vue :photos="product.images" :unique="'slider' + index">
                     </slider-vue>
-                    <div v-text="product.name"></div>
+                    <div class="small" v-text="product.name"></div>
                     <div class="d-flex" style="flex-direction: column;">
                         <template v-if="product.discount && product.discountedPrice + '₺'">
                             <s class="text-muted"><small v-text="product.price + '₺'"></small></s>
@@ -88,15 +94,16 @@
                                         v-text="product.discount + '%'"></tspan>
                                 </text>
                             </svg>
-                            <div v-text="product.discountedPrice"></div>
+                            <div class="fw-bold" v-text="product.discountedPrice"></div>
                         </template>
-                        <span v-else v-text="product.price + '₺'"></span>
+                        <span v-else class="fw-bold" v-text="product.price + '₺'"></span>
                     </div>
                     <div class="d-flex align-items-center me-4" v-if="wasLoggedIn">
-                        <button class="item-count-button" @click="removeItem(product)">-</button>
-                        <span type="number" class="item-count" v-text="basketCount(product)"></span>
+                        <button v-show="basketCount(product)" class="item-count-button"
+                            @click="removeItem(product)">-</button>
+                        <span v-show="basketCount(product)" type="number" class="item-count"
+                            v-text="basketCount(product)"></span>
                         <button class="item-count-button" @click="addItem(product)">+</button>
-
                     </div>
                 </li>
             </ul>
@@ -107,7 +114,7 @@
                         <slider-vue :photos="product.images" :unique="'slider' + index">
                         </slider-vue>
                         <div class="card-body">
-                            <div v-text="product.name"></div>
+                            <div class="small" v-text="product.name"></div>
                             <div class="d-flex" style="flex-direction: column;">
                                 <template v-if="product.discount && product.discountedPrice + ' ₺'">
                                     <s class="text-muted"><small v-text="product.price + ' ₺'"></small></s>
@@ -125,9 +132,9 @@
                                                 v-text="product.discount + '%'"></tspan>
                                         </text>
                                     </svg>
-                                    <div v-text="product.discountedPrice"></div>
+                                    <div class="fw-bold" v-text="product.discountedPrice"></div>
                                 </template>
-                                <span v-else v-text="product.price + '₺'"></span>
+                                <span v-else class="fw-bold" v-text="product.price + '₺'"></span>
                             </div>
                         </div>
                         <div class="card-footer d-flex align-items-center justify-content-between" v-if="wasLoggedIn">
