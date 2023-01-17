@@ -133,7 +133,6 @@ export default {
 
     }
   },
-
   methods: {
     fetchFunc(resource, method, options = {}, body) {
       const { timeout = 20000 } = options;
@@ -296,12 +295,11 @@ export default {
       }
       return true;
     },
-    removeAdress(adres) {
-      console.log("210:", adres.id);
+    removeAddress(adres) {
       this.fetchFunc("https://tıktık.com:8443/api/addresses/" + adres.id, "DELETE", {}).then(res => {
         this.getUserData();
       }).catch((err) => {
-        this.showToast({}, err);
+        alert("Hata Meydana Geldi")
       })
     },
     showToast(options, error) {

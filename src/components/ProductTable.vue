@@ -14,6 +14,7 @@
 
 .product-item {
     display: grid;
+    grid-template-columns: 2fr 2fr 1fr 2fr;
 }
 
 .product-item div {

@@ -14,7 +14,23 @@ export default {
         BasketView
     },
     data() {
-        return {}
+        return {
+            paymentLock: false
+        }
     },
+    mounted() {
+        this.emitter.on("paymentLock", (paymentLock) => {
+            this.paymentLock = paymentLock;
+        });
+    },
+    beforeUnmount() {
+        this.emitter.off("paymentLock");
+    },
+    beforeRouteLeave(to, from) {
+        if (this.paymentLock) {
+            const answer = window.confirm('Ödeme Yaptınız Ancak Henüz Sipariş Oluşturmadınız!\nDevam Etmek İstiyor Musunuz?');
+            if (!answer) return false
+        }
+    }
 };
 </script>

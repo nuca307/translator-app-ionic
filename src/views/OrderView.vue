@@ -1,8 +1,13 @@
 <style>
 .order-item-header {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   max-width: 500px;
+}
+
+.order-item-header * {
+  margin: 0 2px;
 }
 </style>
 <template>
@@ -16,7 +21,7 @@
             :aria-controls="'order' + order.id">
             <div class="d-flex justify-content-between w-100">
               <div v-text="'Sipariş No: ' + order.id"> </div>
-              <div v-text="'Toplam Tutarı: ' + (order.totalItemPrice + order.carryingPrice) + '₺'">
+              <div v-text="'Toplam Tutarı: ' + (order.totalItemPrice + order.carryingPrice).toFixed(2) + '₺'">
               </div>
               <div>
                 <div>
@@ -86,23 +91,40 @@
                 <input type="text" class="form-control" v-model="order.vendorNote">
               </div>
               <hr v-show="order.vendorNote != null">
-              <div class="p-2">
-                <small>
-                  <h6>Tedarikçi Bilgileri</h6>
-                  <hr>
-                  <b>Telefon: </b>
-                  <span v-text="order.vendor.phone"></span>
-                </small>
-                <small>
-                  <div><b>Adres: </b></div>
-                  <div v-text="order.vendor.address"></div>
-                  <div v-text="order.vendor.district + '/' + order.vendor.province"></div>
-                  <div>
-                    <span v-text="'Apartman: ' + order.address.apartment"></span>
-                    <span v-text="' Kat: ' + order.address.floor"></span>
-                    <span v-text="' Daire: ' + order.address.roomNumber"></span>
-                  </div>
-                </small>
+              <div class="row p-2">
+                <div class="col-md-6">
+
+                  <small>
+                    <h6>Teslimat Bilgileri</h6>
+                    <hr>
+                    <b>Telefon: </b>
+                    <span v-text="order.user.phone"></span>
+                  </small>
+                  <small>
+                    <div><b>Adres: </b></div>
+                    <div v-text="order.address.address"></div>
+                    <div v-text="order.address.district + '/' + order.address.province"></div>
+                    <div>
+                      <span v-text="'Apartman: ' + order.address.apartment"></span>
+                      <span v-text="' Kat: ' + order.address.floor"></span>
+                      <span v-text="' Daire: ' + order.address.roomNumber"></span>
+                    </div>
+                  </small>
+                </div>
+                <div class="col-md-6">
+
+                  <small>
+                    <h6>Tedarikçi Bilgileri</h6>
+                    <hr>
+                    <b>Telefon: </b>
+                    <span v-text="order.vendor.phone"></span>
+                  </small>
+                  <small>
+                    <div><b>Adres: </b></div>
+                    <div v-text="order.vendor.address"></div>
+                    <div v-text="order.vendor.district + '/' + order.vendor.province"></div>
+                  </small>
+                </div>
               </div>
               <div class="row">
                 <div class="col-12 col-xl-6" v-for="orderItem of order.purchaseOrderItems">
@@ -159,36 +181,35 @@
                             @click="setOrderItemStatus(order, orderItem, -3)">Ürünü İade Et</button>
                         </div>
                       </div>
-                      <div
-                        v-show="orderItem.adminNote != null && (orderItem.status == 7 || orderItem.status == 8 || orderItem.status == -4 || orderItem.status == -5)">
+                      <div v-show="orderItem.adminNote">
                         <small><b>Yönetici Notu: </b></small>
                         <span v-text="orderItem.adminNote"></span>
                       </div>
 
-                      <div v-show="orderItem.vendorNote != null">
+                      <div v-show="orderItem.vendorNote">
                         <small><b>Tedarikçi Notu: </b></small>
-                        <input type="text" class="form-control" v-model="orderItem.vendorNote">
+                        <span v-text="orderItem.vendorNote"></span>
                       </div>
                     </div>
                     <div class="order-item-header">
-                      <div>
+                      <img :src="'https://tıktık.com:8443/api' + orderItem.image" :alt="orderItem.name + ' img'"
+                        width="160" height="90">
+                      <div style="min-width: 350px;">
                         <small><b>Ürün: </b></small>
-                        <span v-text="orderItem.name"></span>
+                        <div v-text="orderItem.name"></div>
                       </div>
                       <div>
                         <small><b>Miktar: </b></small>
-                        <span v-text="orderItem.amount + ' ' + orderItem.unit"></span>
+                        <div v-text="orderItem.amount + ' ' + orderItem.unit"></div>
                       </div>
                       <div>
                         <small><b>Fiyat: </b></small>
-                        <span v-text="orderItem.totalSellingPrice + '₺'"></span>
+                        <div v-text="orderItem.totalSellingPrice.toFixed(2) + '₺'"></div>
                       </div>
                     </div>
                     <div>
-                      <img :src="'https://tıktık.com:8443/api' + orderItem.image" :alt="orderItem.name + ' img'"
-                        width="100" height="100">
                     </div>
-                    <div v-show="orderItem.customerNote != null">
+                    <div v-show="orderItem.customerNote">
                       <small>
                         <div><b>Müşteri Notu: </b><span v-text="orderItem.customerNote"></span></div>
                       </small>
@@ -223,13 +244,11 @@ export default {
       orderItems: [],
       toast: {},
       toastVue: undefined,
-      websocket: undefined,
       userName: null,
       userPhone: null,
       userId: null
     }
   },
-
   methods: {
     fetchFunc(resource, method, options = {}, body) {
       const { timeout = 20000 } = options;
@@ -375,23 +394,6 @@ export default {
       } else {
         Toast.getOrCreateInstance(document.querySelector("#toast_alert")).show();
       }
-    },
-    connectToWebSocket() { // TODO: in final product, will be revised
-      let wsURI = "wss://tıktık.com:8443/api/socket/purchaseOrder/" + this.vendorId + "?auth=" + this.token;
-
-      if (this.websocket != undefined && this.websocket.readyState === WebSocket.OPEN) {
-        this.websocket.close();
-      }
-      this.websocket = new WebSocket(wsURI);
-      this.websocket.onmessage = (message) => {
-
-        //Sound notification
-        var audio = new Audio("/sound/bildirim.mp3");
-        audio.play();
-        (message.data);
-        this.orders.push(message.order);
-        alert("Yeni Sipariş")
-      }
     }
   },
   mounted() {
@@ -400,7 +402,6 @@ export default {
     this.userPhone = user.phone;
     this.userId = user.id;
     this.token = localStorage.getItem("token");
-    this.connectToWebSocket();
     this.toastVue = new Toast(document.querySelector("#toast_alert"));
     //inti toast
     Array.from(document.querySelectorAll('.toast'))
@@ -418,6 +419,12 @@ export default {
        this.userPhone = data[0].phone;
      });*/
 
+    this.emitter.on("on_websocket_message", (message) => {
+      alert(message);
+    })
+  },
+  beforeUnmount() {
+    this.emitter.off("on_websocket_message");
   }
 };
 </script>

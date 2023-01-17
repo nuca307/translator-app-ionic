@@ -63,6 +63,18 @@ const router = createRouter({
       component: () => import("../pages/FoodsPage.vue"),
     },
     {
+      path: "/kampanyalar",
+      component: () => import("../pages/CampaignPage.vue"),
+    },
+    {
+      path: "/kampanyalar/food/:campaignId",
+      component: () => import("../pages/CampaignFoodsPage.vue"),
+    },
+    {
+      path: "/kampanyalar/shopping/:campaignId",
+      component: () => import("../pages/CampaignProductsPage.vue"),
+    },
+    {
       path: "/mesafeli-satis-sozlesmesi",
       component: () => import("../pages/DistanceSellingContractPage.vue"),
     },

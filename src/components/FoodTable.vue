@@ -454,7 +454,6 @@ export default {
         this.isLoaded = false;
         this.selectedLimit = parseInt(localStorage.getItem("table_limit_of_" + this.unique) || 10);
         this.pagination.limit = this.selectedLimit;
-
     },
     unmounted() {
         window.removeEventListener("resize", this.checkIsMobile);

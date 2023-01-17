@@ -102,14 +102,18 @@ export default {
         connectToWebSocket() {
             let user = JSON.parse(localStorage.getItem("user"));
             if (user) {
-                let wsURI = "wss://tıktık.com:8443/api/socket/purchaseOrder?auth=" + localStorage.getItem("token");
+                let wsURI = "wss://tıktık.com:8443/api/socket/purchaseOrder?auth=" + localStorage.getItem("token") + "&userId=" + user.id;
 
                 if (this.websocket != undefined && this.websocket.readyState === WebSocket.OPEN) {
                     this.websocket.close();
                 }
                 this.websocket = new WebSocket(wsURI);
                 this.websocket.onmessage = function processMessage(message) {
-                    console.log(message);
+
+                    //Sound notification
+                    var audio = new Audio("/sound/bildirim.mp3");
+                    audio.play();
+                    this.emitter.emit("on_websocket_message", message);
                 }
             }
         },
@@ -345,8 +349,8 @@ export default {
         this.emitter.on("basket_remove_from_item", (item) => {
             this.removeItem(item);
         })
-        this.emitter.on("on_websocket_message", (message) => {
-            this.websocket.send(JSON.stringify(message));
+        this.emitter.on("send_websocket_message", (message) => {
+            this.websocket.send(message);
         })
     },
     created() {
@@ -375,7 +379,7 @@ export default {
         this.emitter.off("basket_remove_from_product");
         this.emitter.off("basket_add_to_item");
         this.emitter.off("basket_remove_from_item");
-        this.emitter.off("on_websocket_message");
+        this.emitter.off("send_websocket_message");
     }
 };
 

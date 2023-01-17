@@ -2,7 +2,7 @@
   <main>
     <div>
       <div class="row mt-2">
-        <bread-crump class="d-none d-md-block" :links="links"></bread-crump>
+        <BreadCrump class="d-none d-md-block" :links="links"></BreadCrump>
         <div class="d-none d-md-block col-md-3 col-xl-2">
 
           <div class="list-group sticky-top" style="top:3rem;">
@@ -15,21 +15,22 @@
               :aria-current="categoryFilter == category.id" @click="setFilter(category.id)"></button>
           </div>
         </div>
-        <div class="col-12 d-md-none sticky-top" style="overflow-x: auto ;">
-          <bread-crump :links="links"></bread-crump>
+        <div class="col-12 d-md-none sticky-top" style="overflow-x: scroll ;">
+          <BreadCrump :links="links"></BreadCrump>
           <div class="list-group list-group-horizontal my-2">
             <button type="button" class="list-group-item small list-group-item-action"
               :class="{ active: categoryFilter == 0 }" :aria-current="categoryFilter == 0" @click="setFilter(0)">
               TÜMÜ
             </button>
-            <button type="button" class="list-group-item small list-group-item-action" v-for="category of categories"
+            <button type="button" class="list-group-item list-group-item-action" v-for="category of categories"
               :key="category" v-text="category.name" :class="{ active: categoryFilter == category.id }"
               :aria-current="categoryFilter == category.id" @click="setFilter(category.id)"></button>
           </div>
         </div>
         <div class="col-12 col-md-9 col-xl-10">
-          <food-table class="display" :data="filteredFoods" :columns="columns" unique="foods_table" v-slot="slotData">
-          </food-table>
+          <product-table class="display" :data="filteredProducts" :columns="columns" unique="products_table"
+            v-slot="slotData">
+          </product-table>
         </div>
       </div>
     </div>
@@ -37,19 +38,19 @@
 </template>
 
 <script>
-import FoodTable from '../components/FoodTable.vue';
+import ProductTable from '../components/ProductTable.vue';
 import BreadCrump from "../components/BreadCrump.vue";
 
 export default {
   props: ["pageIndex"],
   components: {
-    FoodTable,
+    ProductTable,
     BreadCrump
   },
   data() {
     return {
-      foods: [],
-      filteredFoods: [],
+      products: [],
+      filteredProducts: [],
       categories: [],
       categoryFilter: 0,
       card: {
@@ -74,8 +75,8 @@ export default {
       ],
       links: [
         { to: "/", text: "Anasayfa" },
-        { to: "/kategoriler/food/" + this.$route.params.vendorId, text: "Kategoriler" },
-        { to: "", text: "Yemekler" }
+        { to: "/kampanyalar", text: "Kampanyalar" },
+        { to: "", text: "Ürünler" }
       ]
     }
   },
@@ -111,51 +112,43 @@ export default {
       });
       return response;
     },
-    /*getAllVendorCategories() {
-      return new Promise((resolve) => {
-        fetchFunc("https://tıktık.com:8443/api/public/foods/vendor/mainCategory/" + this.$route.params.module + "/" + this.$route.params.vendorId, "GET", {}, {}).then(res => {
-          this.foods = res;
-          resolve(res);
-        })
-      });
-    },*/
     setFilter(filter) {
       this.categoryFilter = filter;
-      this.filterFoods();
+      this.filterProducts();
     },
-    filterFoods() {
+    filterProducts() {
       if (this.categoryFilter) {
-        this.filteredFoods = this.foods.filter(food => food.mainCategory.id == this.categoryFilter || food.subCategory.id == this.categoryFilter)
+        this.filteredProducts = this.products.filter(product => product.mainCategory.id == this.categoryFilter || product.subCategory.id == this.categoryFilter)
       }
       else {
-        this.filteredFoods = JSON.parse(JSON.stringify(this.foods));
+        this.filteredProducts = JSON.parse(JSON.stringify(this.products));
       }
     },
-    getAllVendorFoodsByCategory() {
+    getAllVendorProductsByCategory() {
       return new Promise((resolve) => {
-        this.fetchFunc("https://tıktık.com:8443/api/public/foods/vendor/mainCategoryId/" + this.$route.params.category + "/" + this.$route.params.vendorId, "GET", {}, {}).then(res => {
-          this.foods = res;
+        this.fetchFunc("https://tıktık.com:8443/api/public/products/campaign/" + this.$route.params.campaignId, "GET", {}, {}).then(res => {
+          this.products = res;
           let categories = [];
-          this.foods.forEach(food => {
-            if (food.subCategory) {
-              if (!categories.find(e => e.id == food.subCategory.id)) {
-                categories.push(food.subCategory)
+          this.products.forEach(product => {
+            if (product.subCategory) {
+              if (!categories.find(e => e.id == product.subCategory.id)) {
+                categories.push(product.subCategory)
               }
             } else {
-              if (!categories.find(e => e.id == food.mainCategory.id)) {
-                categories.unshift(food.mainCategory)
+              if (!categories.find(e => e.id == product.mainCategory.id)) {
+                categories.unshift(product.mainCategory)
               }
             };
           });
           this.categories = categories;
-          this.filterFoods();
+          this.filterProducts();
           resolve(res);
         })
       });
     },
   },
   mounted() {
-    this.getAllVendorFoodsByCategory();
+    this.getAllVendorProductsByCategory();
   }
 }
 </script>

@@ -1,4 +1,16 @@
 <style scoped>
+.loading-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #111111aa;
+  color: white;
+  font-size: 2rem;
+}
+
 .item-image {
   width: 3rem;
   height: 3rem;
@@ -27,7 +39,9 @@
 }
 
 /* Kredi KArtı Tasarımı */
-#credit_card_pane .card {
+#credit_card_pane .card,
+#credit_card_pane iframe {
+  width: 100%;
   max-width: 500px;
   margin: auto;
   color: black;
@@ -131,9 +145,9 @@
                 v-text="(item.discount ? item.discountedPrice : item.price) * item.amount + ' ₺'"></strong-->
               <div class="d-flex" style="flex-direction: column;">
                 <span v-if="(item.discount == null || item.discount == 0)"
-                  v-text="item.price * item.amount + '₺'"></span>
+                  v-text="(item.price * item.amount).toFixed(2) + '₺'"></span>
                 <template v-else>
-                  <s class="text-muted"><small v-text="item.price * item.amount + '₺'"></small></s>
+                  <s class="text-muted"><small v-text="(item.price * item.amount).toFixed(2) + '₺'"></small></s>
                   <svg xmlns="http://www.w3.org/2000/svg" style="width: 2rem;" viewBox="0 0 26.458 18.708">
                     <path d="M0 0h26.458v10.583l-13.132 8.154L0 11.906z" fill="#198754"
                       paint-order="stroke fill markers" />
@@ -146,7 +160,7 @@
                       </tspan>
                     </text>
                   </svg>
-                  <div v-text="item.discountedPrice * item.amount + '₺'"></div>
+                  <div v-text="(item.discountedPrice * item.amount).toFixed(2) + '₺'"></div>
                 </template>
               </div>
             </span>
@@ -200,25 +214,33 @@
           </tr>
         </table>
       </div>
-      <div class="card border-success p-2 mt-4">
+      <div class="card border-success p-2 mt-4" v-if="getTotalPrice > minAmount">
         <h6>Ödeme İşlemleri</h6>
         <hr>
         <ul class="nav nav-tabs" id="myTab" role="tablist">
           <li class="nav-item" role="presentation">
             <button class="nav-link active" id="at_the_door" data-bs-toggle="tab" data-bs-target="#at_the_door_pane"
-              type="button" role="tab" aria-controls="at_the_door_pane" aria-selected="true">Kapıda Ödeme</button>
+              type="button" role="tab" aria-controls="at_the_door_pane" aria-selected="true"
+              @click="paymentMethod = 'Kapıda Ödeme'">Kapıda Ödeme</button>
           </li>
           <li class="nav-item" role="presentation">
             <button class="nav-link" id="credit_card" data-bs-toggle="tab" data-bs-target="#credit_card_pane"
-              type="button" role="tab" aria-controls="credit_card_pane" aria-selected="false">Kredi Kartı</button>
+              type="button" role="tab" aria-controls="credit_card_pane" aria-selected="false"
+              @click="paymentMethod = 'Kredi Kartı'">
+              <i class="fa-solid fa-credit-card"></i>
+              Kredi Kartı</button>
           </li>
         </ul>
         <div class="tab-content" id="myTabContent">
-          <div class="tab-pane fade show active" id="at_the_door_pane" role="tabpanel" aria-labelledby="at_the_door"
-            tabindex="0">Ödeme İşlemleriniz Kuryemiz Tarafından Gerçekleştirilecektir.</div>
-          <div class="tab-pane fade d-none" id="credit_card_pane" role="tabpanel" aria-labelledby="credit_card"
+          <div class="tab-pane fade show active p-2" id="at_the_door_pane" role="tabpanel" aria-labelledby="at_the_door"
             tabindex="0">
+            <div class="alert alert-secondary">Ödeme İşlemleriniz Kuryemiz Aracılığıyla Gerçekleştirilecektir.</div>
+          </div>
+          <div class="tab-pane fade" id="credit_card_pane" role="tabpanel" aria-labelledby="credit_card" tabindex="0">
             <div class="card px-4">
+              <div class="loading-container" :hidden="!isLoading">
+                <i class="fa-solid fa-spinner fa-spin"></i> Yükleniyor
+              </div>
               <p class="h8 py-3">Ödeme Detayları</p>
               <div class="row gx-3">
                 <div class="col-12">
@@ -231,23 +253,23 @@
                 <div class="col-12">
                   <div class="d-flex flex-column">
                     <p class="text mb-1">Kart Numarası</p>
-                    <input class="form-control mb-3" type="text" placeholder="1234 5678 435678"
+                    <input class="form-control mb-3" type="number" placeholder="1234 5678 4356 7890"
                       v-model="card.cardNumber">
                   </div>
                 </div>
-                <div class="col-3">
+                <div class="col-4">
                   <div class="d-flex flex-column">
                     <p class="text mb-1">Ay</p>
-                    <input class="form-control mb-3" type="text" placeholder="MM" v-model="card.expireMonth">
+                    <input class="form-control mb-3" type="number" placeholder="MM" v-model="card.expireMonth">
                   </div>
                 </div>
-                <div class="col-3">
+                <div class="col-4">
                   <div class="d-flex flex-column">
                     <p class="text mb-1">Yıl</p>
-                    <input class="form-control mb-3" type="text" placeholder="YYYY" v-model="card.expireYear">
+                    <input class="form-control mb-3" type="number" placeholder="YYYY" v-model="card.expireYear">
                   </div>
                 </div>
-                <div class="col-6">
+                <div class="col-4">
                   <div class="d-flex flex-column">
                     <p class="text mb-1">CVV/CVC</p>
                     <input class="form-control mb-3 pt-2 " type="password" placeholder="***" v-model="card.cvc">
@@ -265,7 +287,9 @@
         </div>
 
       </div>
-      <button v-if="getTotalPrice > minAmount" class="btn btn-success mt-2" @click="setUsersOrder">Sipariş
+      <button v-if="getTotalPrice > minAmount"
+        v-show="paymentMethod == 'Kapıda Ödeme' || (paymentMethod == 'Kredi Kartı' && paymentId)"
+        class="btn btn-success mt-2" @click="setUsersOrder">Sipariş
         Oluştur</button>
     </div>
     <address-modal :addresses="addresses"></address-modal>
@@ -300,20 +324,23 @@ export default {
         { to: "/", text: "Anasayfa" },
         { to: "", text: "Sepet" }
       ],
-      gecici: {},
+      temp: {},
       userName: null,
       userPhone: null,
       userId: null,
       modal: null,
-      minAmount: 100,
-      carryingPrice: 9.99,
+      minAmount: 0,
+      carryingPrice: 0,
       card: {
-        cardHolderName: "John Doe",
-        cardNumber: "5528790000000008",
-        expireMonth: "12",
-        expireYear: "2030",
-        cvc: "123"
+        cardHolderName: "",
+        cardNumber: "",
+        expireMonth: "",
+        expireYear: "",
+        cvc: ""
       },
+      isLoading: false,
+      paymentId: "",
+      paymentStatus: ""
     }
   },
   inject: {
@@ -437,7 +464,7 @@ export default {
       })
     },
     setUsersBasketItem(item) {
-      this.gecici = item
+      this.temp = item
       this.fetchFunc("https://tıktık.com:8443/api/basketItems/", "PUT", {
         headers: {
           "Authorization": localStorage.getItem("token")
@@ -449,7 +476,7 @@ export default {
         this.showToast();
 
       }).catch((err) => {
-        item = this.gecici;
+        item = this.temp;
         this.showToast({}, err);
       })
     },
@@ -482,10 +509,23 @@ export default {
         })
       });
     },
+    getGeneralDefinitions() {
+      return new Promise((resolve, reject) => {
+        let user = JSON.parse(localStorage.getItem("user"));
+        this.fetchFunc("https://tıktık.com:8443/api/public/generalDefinitions", "GET", {}).then(res => {
+          res.forEach(datum => {
+            if (datum.defKey == "carryingPrice") this.carryingPrice = parseFloat(datum.defValue);
+            if (datum.defKey == "minAmount") this.minAmount = parseFloat(datum.defValue);
+          })
+        })
+      });
+    },
     setUsersOrder() {
       if (this.paymentMethod == "Kredi Kartı") {
-        alert("Kredi Kartı Alışverişimiz Henüz Aktif Edilmemiştir.\nAnlayışınız İçin Teşekkürler.");
-        return;
+        if (this.paymentStatus != "success") {
+          alert("Ödemeniz Tamamlanmamış Görünüyor.\nBir Problem Olduğunu Düşünüyorsanız TıkTık ile İletişime Geçebilirsiniz.");
+          return;
+        }
       }
       let user = JSON.parse(localStorage.getItem("user"));
       let orders = [];
@@ -496,8 +536,11 @@ export default {
           status: 0,
           vendor: b.vendor,
           address: this.selectedAddress,
-          carryingPrice: 9.99,
-          payment: { method: this.paymentMethod }
+          carryingPrice: this.carryingPrice,
+          payment: {
+            integratorId: this.paymentId,
+            method: this.paymentMethod
+          }
         }
 
         b.basketItems.forEach(item => {
@@ -510,16 +553,18 @@ export default {
         orders
       ).then(res => {
         //this.order = res;
-        this.emitter.emit("on_websocket_message",
-          {
-            message: "Yeni Sipariş",
-            order: res
-          });
+        orders.forEach(order => {
+          this.emitter.emit("send_websocket_message",
+            `orderId=${order.id}&status=${order.status}&process=create&message=Yeni Sipariş`);
+        })
+
+        this.emitter.emit("paymentLock", false);
         alert("Siparişiniz Oluşturuldu");
         this.$router.push('/siparis');
       })
     },
     setPaymentRequest() {
+      this.isLoading = true;
       let basket = {
         price: this.getTotalPrice,
         basketItems: [],
@@ -533,7 +578,7 @@ export default {
           discountedPrice: 0,
           price: this.carryingPrice,
           amount: 1,
-          vendor: { name: "tıktık.com" }
+          vendor: { id: "7b189816-4f3c-457f-b08d-1006b1818e11" }
         })
         e.basketItems.forEach(item => {
           basket.basketItems.push(item);
@@ -546,10 +591,17 @@ export default {
         basket: basket,
       }
 
-      this.fetchFunc("https://tıktık.com:8443/api/iyzico", "POST", {}, paymentRequest
+      this.fetchFunc("https://tıktık.com:8443/api/iyzico/pay", "POST", {}, paymentRequest
       ).then(res => {
-        document.querySelector("#credit_card_pane").innerHTML = res.threedsHtmlContent;
-        alert("Siparişiniz Oluşturuldu");
+        this.isLoading = true;
+        document.querySelector("#credit_card_pane").querySelector(".card").innerHTML = "";
+        let iframe = document.createElement("iframe");
+        iframe.setAttribute("id", "iyzico_iframe");
+        iframe.style.width = "100%";
+        iframe.style.maxWidth = "500px";
+        iframe.style.minHeight = "447px"
+        document.querySelector("#credit_card_pane").querySelector(".card").append(iframe);
+        iframe.contentDocument.write(res.htmlContent);
       })
     },
     selectAddress() {
@@ -581,12 +633,25 @@ export default {
       } else {
         Toast.getOrCreateInstance(document.querySelector("#basketToast")).show();
       }
+    },
+    messageHandler(event) {
+      //console.log("Message received from the child: " + JSON.stringify(event.data)); // Message received from child
+      if (typeof event.data == "string") {
+        let message = {};
+        event.data.split("&").forEach(part => {
+          message[part.split("=")[0]] = part.split("=")[1];
+        })
+        this.paymentId = message.paymentId;
+        this.paymentStatus = message.status;
+        this.emitter.emit("paymentLock", true);
+      }
     }
   },
   mounted() {
+    window.addEventListener('message', this.messageHandler);
     let modalDOM = document.querySelector("#addresses_modal");
     this.modal = new Modal(modalDOM, { backdrop: "static" });
-    const tabs = document.querySelectorAll('button[data-bs-toggle="tab"]')
+    /*const tabs = document.querySelectorAll('button[data-bs-toggle="tab"]')
     tabs.forEach(e => {
       e.addEventListener('shown.bs.tab', event => {
         if (event.target.id == "credit_card") {
@@ -597,11 +662,13 @@ export default {
         }
       })
     })
-
+*/
     this.emitter.on("addresses_modal", (address) => {
       this.selectedAddress = address;
       this.modal.hide();
     });
+
+    this.getGeneralDefinitions();
 
     this.getUsersAdressByUserId().then((res) => {
       this.addresses = res;
@@ -636,5 +703,25 @@ export default {
     this.userPhone = user.phone;
 
   },
+  beforeUnmount() {
+    window.removeEventListener('message', this.messageHandler);
+  }
+  /*
+  beforeUpdate() {
+    this.basket = [];
+    if (this.basketInfo.basketItems) {
+      this.basketInfo.basketItems.forEach((item) => {
+        let foundItemExtended = this.basket.find(e => e.vendor.id == item.vendor.id);
+        if (foundItemExtended) {
+          foundItemExtended.basketItems.push(item);
+        } else {
+          this.basket.push({
+            vendor: item.vendor,
+            basketItems: [{ ...item }]
+          })
+        }
+      })
+    }
+  },*/
 }
 </script>

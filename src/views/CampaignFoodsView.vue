@@ -2,7 +2,7 @@
   <main>
     <div>
       <div class="row mt-2">
-        <bread-crump class="d-none d-md-block" :links="links"></bread-crump>
+        <BreadCrump class="d-none d-md-block" :links="links"></BreadCrump>
         <div class="d-none d-md-block col-md-3 col-xl-2">
 
           <div class="list-group sticky-top" style="top:3rem;">
@@ -16,7 +16,7 @@
           </div>
         </div>
         <div class="col-12 d-md-none sticky-top" style="overflow-x: auto ;">
-          <bread-crump :links="links"></bread-crump>
+          <BreadCrump :links="links"></BreadCrump>
           <div class="list-group list-group-horizontal my-2">
             <button type="button" class="list-group-item small list-group-item-action"
               :class="{ active: categoryFilter == 0 }" :aria-current="categoryFilter == 0" @click="setFilter(0)">
@@ -74,7 +74,7 @@ export default {
       ],
       links: [
         { to: "/", text: "Anasayfa" },
-        { to: "/kategoriler/food/" + this.$route.params.vendorId, text: "Kategoriler" },
+        { to: "/kampanyalar", text: "Kampanyalar" },
         { to: "", text: "Yemekler" }
       ]
     }
@@ -111,14 +111,6 @@ export default {
       });
       return response;
     },
-    /*getAllVendorCategories() {
-      return new Promise((resolve) => {
-        fetchFunc("https://tıktık.com:8443/api/public/foods/vendor/mainCategory/" + this.$route.params.module + "/" + this.$route.params.vendorId, "GET", {}, {}).then(res => {
-          this.foods = res;
-          resolve(res);
-        })
-      });
-    },*/
     setFilter(filter) {
       this.categoryFilter = filter;
       this.filterFoods();
@@ -133,7 +125,7 @@ export default {
     },
     getAllVendorFoodsByCategory() {
       return new Promise((resolve) => {
-        this.fetchFunc("https://tıktık.com:8443/api/public/foods/vendor/mainCategoryId/" + this.$route.params.category + "/" + this.$route.params.vendorId, "GET", {}, {}).then(res => {
+        this.fetchFunc("https://tıktık.com:8443/api/public/foods/campaign/" + this.$route.params.campaignId, "GET", {}, {}).then(res => {
           this.foods = res;
           let categories = [];
           this.foods.forEach(food => {
