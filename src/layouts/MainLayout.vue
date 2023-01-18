@@ -1,5 +1,6 @@
 <template>
-    <ion-page class="container-fluid" style="overflow:auto;max-height: 100vh;min-height: 100vh;">
+    <ion-page class="container-fluid" 
+    style="overflow:auto;max-height: 100vh;min-height: 100vh;margin-top: constant(safe-area-inset-top) !important;margin-top: env(safe-area-inset-top) !important;">
         <div class="row flex-nowrap">
             <main class="col py-3">
                 <navbar :pageIndex="pageIndex" :basket="basket" :username="getUserName"></navbar>

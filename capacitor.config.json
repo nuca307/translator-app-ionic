@@ -1,5 +1,5 @@
 {
-  "appId": "com.tıktık",
+  "appId": "com.nalinci.tiktik",
   "appName": "TıkTık",
   "bundledWebRuntime": false,
   "npmClient": "npm",
@@ -14,5 +14,8 @@
     "allowNavigation": [
       "192.168.1.100"
     ]
+  },
+  "ios": {
+    "contentInset": "always"
   }
 }
