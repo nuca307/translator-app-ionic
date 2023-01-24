@@ -38,21 +38,6 @@
                         </form>
                     </div>
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                        <li class="nav-item mx-1">
-                            <div class="btn-group">
-                                <RouterLink to="/kampanyalar" class="btn btn-light" aria-current="page">Kampanyalar
-                                </RouterLink>
-                            </div>
-                        </li>
-                        <li class="nav-item" v-if="wasLoggedIn">
-                            <RouterLink :to="basketLink" class="btn btn-light position-relative" aria-current="page">
-                                Sepet
-                                <span class="badge bagde-sm rounded-pill text-light bg-success" v-if="pageIndex != 3">
-                                    <span v-text="basketSize"></span>
-                                </span>
-
-                            </RouterLink>
-                        </li>
                         <li class="nav-item dropdown ms-1" v-if="wasLoggedIn">
                             <a class="dropdown-btn btn dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                                 aria-expanded="false">
@@ -125,7 +110,7 @@ export default {
             return false;
         },
         basketSize() {
-            return Object.values(this.basketSummary).reduce((total, elem) => total += elem, 0);
+            return this.basketSummary.length;
         }
     },
     methods: {

@@ -1,11 +1,10 @@
 <template>
-    <ion-page class="container-fluid" 
-    style="overflow:auto;max-height: 100vh;min-height: 100vh;margin-top: constant(safe-area-inset-top) !important;margin-top: env(safe-area-inset-top) !important;">
+    <ion-page class="container-fluid"
+        style="overflow:auto;max-height: 100vh;min-height: 100vh;margin-top: constant(safe-area-inset-top) !important;margin-top: env(safe-area-inset-top) !important;">
         <div class="row flex-nowrap">
             <main class="col py-3">
                 <navbar :pageIndex="pageIndex" :basket="basket" :username="getUserName"></navbar>
                 <slot :basket="basket" />
-                <footer-vue></footer-vue>
             </main>
         </div>
         <toast-vue :toast="toast"></toast-vue>
@@ -17,7 +16,6 @@ import { Toast } from "bootstrap";
 import Navbar from "../components/NavbarVue.vue";
 import ToastVue from '../components/ToastVue.vue';
 import { IonPage } from "@ionic/vue";
-import FooterVue from "../components/FooterVue.vue";
 
 
 export default {
@@ -26,7 +24,6 @@ export default {
         Navbar,
         ToastVue,
         IonPage,
-        FooterVue
     },
     provide: function () {
         return {
@@ -103,13 +100,13 @@ export default {
         connectToWebSocket() {
             let user = JSON.parse(localStorage.getItem("user"));
             if (user) {
-                let wsURI = "wss://tıktık.com:8443/api/socket/purchaseOrder?auth=" + localStorage.getItem("token") + "&userId=" + user.id;
+                let wsURI = "wss://tıktık.com:8443/api/socket/purchaseOrder?auth=" + localStorage.getItem("token") + "&carrierId=" + user.id;
 
                 if (this.websocket != undefined && this.websocket.readyState === WebSocket.OPEN) {
                     this.websocket.close();
                 }
                 this.websocket = new WebSocket(wsURI);
-                this.websocket.onmessage = function processMessage(message) {
+                this.websocket.onmessage = (message) => {
 
                     //Sound notification
                     var audio = new Audio("/sound/bildirim.mp3");
@@ -143,17 +140,14 @@ export default {
         setLocalBasket() {
             localStorage.setItem("basket", JSON.stringify(this.basket));
         },
-        getUsersBasketByUserId() {
-            let user = JSON.parse(localStorage.getItem("user"));
+        getAllOrders() {
             return new Promise((resolve) => {
-                this.fetchFunc("https://tıktık.com:8443/api/baskets/user/" + user.id, "GET", {
-                    headers: {
-                        "Authorization": localStorage.getItem("token")
-                    }
-                }).then(res => {
+                this.fetchFunc("purchaseOrders/alive/" + JSON.parse(localStorage.getItem("user")).id, "GET", {}).then(res => {
+                    this.orders = res;
                     resolve(res);
                 })
             });
+
         },
         addFood(food) {
             let item;
@@ -355,23 +349,6 @@ export default {
         })
     },
     created() {
-
-        let user = JSON.parse(localStorage.getItem("user"));
-        if (user) {
-            this.getUsersBasketByUserId().then((res) => {
-                this.basket = res ? res : { ...this.basketDraft };
-                this.setBasketInfo();
-                this.setBasketSummary();
-            });
-        } else {
-            let localBasket = JSON.parse(localStorage.getItem("basket"));
-            if (localBasket)
-                this.basket = localBasket;
-            else
-                this.basket = { ...this.basketDraft };
-            this.setBasketInfo();
-            this.setBasketSummary();
-        }
     },
     beforeUnmount() {
         this.emitter.off("basket_add_to_food_variant");

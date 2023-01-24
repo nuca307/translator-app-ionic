@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@capacitor-community/http": "^1.4.1",
-    "@capacitor/android": "^4.3.0",
+    "@capacitor/android": "4.3.0",
     "@capacitor/app": "4.0.1",
     "@capacitor/core": "4.3.0",
     "@capacitor/geolocation": "^4.1.0",

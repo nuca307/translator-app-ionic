@@ -1,6 +1,6 @@
 {
-  "appId": "com.nalinci.tiktik",
-  "appName": "TıkTık",
+  "appId": "com.nalinci.tiktik.kurye",
+  "appName": "TıkTık-Kurye",
   "bundledWebRuntime": false,
   "npmClient": "npm",
   "webDir": "dist",
