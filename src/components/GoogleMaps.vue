@@ -26,8 +26,8 @@
                         <button type="button" class="btn btn-outline-success" @click="currentLocation"
                             :disabled="locationLoading">Mevcut Konumu
                             Paylaş <i class="fa-solid fa-spinner fa-spin" v-if="locationLoading"></i></button>
-                        <button type="button" class="btn btn-success" :disabled="loading" :class="{ disabled: loading }"
-                            @click="getLocation">
+                        <button hidden type="button" class="btn btn-success" :disabled="loading"
+                            :class="{ disabled: loading }" @click="getLocation">
                             Konumu Seç
                         </button>
                     </div>

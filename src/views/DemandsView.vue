@@ -32,15 +32,15 @@
             <div v-text="order.vendor.name"> </div>
             <div>
               <span class="badge bg-danger" style="min-width: 110px;" v-if="order.status == '-5'"><i
-                  class="fa-solid fa-handshake"></i>
+                  class="fa-solid fa-thumbs-down"></i>
                 İade Red Edildi</span>
               <span class="badge bg-danger" style="min-width: 110px;" v-else-if="order.status == '-4'"><i
-                  class="fa-solid fa-handshake"></i>
+                  class="fa-solid fa-handshake-slash"></i>
                 İptal Red Edildi</span>
               <span class="badge bg-danger" style="min-width: 110px;" v-else-if="order.status == '-3'"><i
-                  class="fa-solid fa-pause"></i> İade İnceleniyor</span>
+                  class="fa-solid fa-rotate-left"></i> İade İnceleniyor</span>
               <span class="badge bg-danger" style="min-width: 110px;" v-else-if="order.status == '-2'"><i
-                  class="fa-solid fa-pause"></i> İptal
+                  class="fa-solid fa-strikethrough"></i> İptal
                 İnceleniyor</span>
               <span class="badge bg-danger" style="min-width: 110px;" v-else-if="order.status == '-1'"><i
                   class="fa-solid fa-xmark"></i> Satıcı İptal
@@ -57,16 +57,16 @@
                   class="fa-solid fa-circle-notch"></i>
                 Hazırlandı</span>
               <span class="badge bg-primary" style="min-width: 110px;" v-else-if="order.status == '5'"><i
-                  class="fa-solid fa-person-biking"></i>
+                  class="fa-solid fa-truck-fast"></i>
                 Yolda</span>
               <span class="badge bg-primary" style="min-width: 110px;" v-else-if="order.status == '6'"><i
-                  class="fa-solid fa-handshake"></i>
+                  class="fa-solid fa-check-double"></i>
                 Teslim Edildi</span>
               <span class="badge bg-primary" style="min-width: 110px;" v-else-if="order.status == '7'"><i
                   class="fa-solid fa-handshake"></i>
                 İptal Kabul Edildi</span>
               <span class="badge bg-primary" style="min-width: 110px;" v-else-if="order.status == '8'"><i
-                  class="fa-solid fa-handshake"></i>
+                  class="fa-solid fa-handshake-angle"></i>
                 İade Kabul Edildi</span>
             </div>
           </div>
@@ -157,14 +157,14 @@
                   <div>
                     <div>
                       <span class="badge bg-danger" v-if="orderItem.status == '-5'"><i
-                          class="fa-solid fa-handshake"></i> İade Red Edildi</span>
+                          class="fa-solid fa-thumbs-down"></i> İade Reddedildi</span>
                       <span class="badge bg-danger" v-if="orderItem.status == '-4'"><i
-                          class="fa-solid fa-handshake"></i> İptal Red Edildi</span>
-                      <span class="badge bg-danger" v-else-if="orderItem.status == '-3'"><i
-                          class="fa-solid  fa-pause"></i>
+                          class="fa-solid fa-handshake-slash"></i> İptal Reddedildi</span>
+                      <span class="badge bg-warning" v-else-if="orderItem.status == '-3'"><i
+                          class="fa-solid fa-rotate-left"></i>
                         İade İnceleniyor</span>
-                      <span class="badge bg-danger" v-else-if="orderItem.status == '-2'"><i
-                          class="fa-solid  fa-pause"></i>
+                      <span class="badge bg-warning" v-else-if="orderItem.status == '-2'"><i
+                          class="fa-solid fa-strikethrough"></i>
                         İptal İnceleniyor</span>
                       <span class="badge bg-danger" v-else-if="orderItem.status == '-1'"><i
                           class="fa-solid fa-xmark"></i> Satıcı İptal Etti</span>
@@ -182,13 +182,13 @@
                           class="fa-solid fa-person-biking"></i>
                         Yolda</span>
                       <span class="badge bg-primary" v-else-if="orderItem.status == '6'"><i
-                          class="fa-solid fa-handshake"></i>
+                          class="fa-solid fa-check-double"></i>
                         Teslim Edildi</span>
                       <span class="badge bg-primary" v-else-if="orderItem.status == '7'"><i
                           class="fa-solid fa-handshake"></i>
                         İptal Kabul Edildi</span>
                       <span class="badge bg-primary" v-else-if="orderItem.status == '8'"><i
-                          class="fa-solid fa-handshake"></i>
+                          class="fa-solid fa-handshake-angle"></i>
                         İade Kabul Edildi</span>
 
                     </div>
@@ -220,16 +220,15 @@
               <div v-text="order.vendor.name"> </div>
               <div>
                 <span class="badge bg-danger" style="min-width: 110px;" v-if="order.status == '-5'"><i
-                    class="fa-solid fa-handshake"></i>
+                    class="fa-solid fa-thumbs-down"></i>
                   İade Red Edildi</span>
                 <span class="badge bg-danger" style="min-width: 110px;" v-else-if="order.status == '-4'"><i
-                    class="fa-solid fa-handshake"></i>
+                    class="fa-solid fa-handshake-slash"></i>
                   İptal Red Edildi</span>
-                <span class="badge bg-danger" style="min-width: 110px;" v-else-if="order.status == '-3'"><i
-                    class="fa-solid fa-pause"></i> İade İnceleniyor</span>
-                <span class="badge bg-danger" style="min-width: 110px;" v-else-if="order.status == '-2'"><i
-                    class="fa-solid fa-pause"></i> İptal
-                  İnceleniyor</span>
+                <span class="badge bg-warning" style="min-width: 110px;" v-else-if="order.status == '-3'"><i
+                    class="fa-solid fa-rotate-left"></i> İade İnceleniyor</span>
+                <span class="badge bg-warning" style="min-width: 110px;" v-else-if="order.status == '-2'"><i
+                    class="fa-solid fa-strikethrough"></i> İptal İnceleniyor</span>
                 <span class="badge bg-danger" style="min-width: 110px;" v-else-if="order.status == '-1'"><i
                     class="fa-solid fa-xmark"></i> Satıcı İptal
                   Etti</span>
@@ -246,16 +245,16 @@
                     class="fa-solid fa-circle-notch"></i>
                   Hazırlandı</span>
                 <span class="badge bg-primary" style="min-width: 110px;" v-else-if="order.status == '5'"><i
-                    class="fa-solid fa-person-biking"></i>
+                    class="fa-solid fa-truck-fast"></i>
                   Yolda</span>
                 <span class="badge bg-primary" style="min-width: 110px;" v-else-if="order.status == '6'"><i
-                    class="fa-solid fa-handshake"></i>
+                    class="fa-solid fa-check-double"></i>
                   Teslim Edildi</span>
                 <span class="badge bg-primary" style="min-width: 110px;" v-else-if="order.status == '7'"><i
                     class="fa-solid fa-handshake"></i>
                   İptal Kabul Edildi</span>
                 <span class="badge bg-primary" style="min-width: 110px;" v-else-if="order.status == '8'"><i
-                    class="fa-solid fa-handshake"></i>
+                    class="fa-solid fa-handshake-angle"></i>
                   İade Kabul Edildi</span>
               </div>
             </div>
@@ -336,14 +335,14 @@
                     <div>
                       <div>
                         <span class="badge bg-danger" v-if="orderItem.status == '-5'"><i
-                            class="fa-solid fa-handshake"></i> İade Red Edildi</span>
+                            class="fa-solid fa-thumbs-down"></i> İade Reddedildi</span>
                         <span class="badge bg-danger" v-if="orderItem.status == '-4'"><i
-                            class="fa-solid fa-handshake"></i> İptal Red Edildi</span>
-                        <span class="badge bg-danger" v-else-if="orderItem.status == '-3'"><i
-                            class="fa-solid  fa-pause"></i>
+                            class="fa-solid fa-handshake-slash"></i> İptal Reddedildi</span>
+                        <span class="badge bg-warning" v-else-if="orderItem.status == '-3'"><i
+                            class="fa-solid fa-rotate-left"></i>
                           İade İnceleniyor</span>
-                        <span class="badge bg-danger" v-else-if="orderItem.status == '-2'"><i
-                            class="fa-solid  fa-pause"></i>
+                        <span class="badge bg-warning" v-else-if="orderItem.status == '-2'"><i
+                            class="fa-solid fa-strikethrough"></i>
                           İptal İnceleniyor</span>
                         <span class="badge bg-danger" v-else-if="orderItem.status == '-1'"><i
                             class="fa-solid fa-xmark"></i>
@@ -363,13 +362,13 @@
                             class="fa-solid fa-person-biking"></i>
                           Yolda</span>
                         <span class="badge bg-primary" v-else-if="orderItem.status == '6'"><i
-                            class="fa-solid fa-handshake"></i>
+                            class="fa-solid fa-check-double"></i>
                           Teslim Edildi</span>
                         <span class="badge bg-primary" v-else-if="orderItem.status == '7'"><i
                             class="fa-solid fa-handshake"></i>
                           İptal Kabul Edildi</span>
                         <span class="badge bg-primary" v-else-if="orderItem.status == '8'"><i
-                            class="fa-solid fa-handshake"></i>
+                            class="fa-solid fa-handshake-angle"></i>
                           İade Kabul Edildi</span>
 
                       </div>
@@ -411,7 +410,7 @@ export default {
       orderItems: [],
       toast: {},
       toastVue: undefined,
-      changeableStatuses: [0, 1, 2, 3, 4],
+      changeableStatuses: [0, 1, 2, 3, 4, 5],
     }
   },
 

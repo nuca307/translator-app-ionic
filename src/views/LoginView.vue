@@ -8,7 +8,7 @@
             <input class="form-control" v-model="email" type="email" placeholder="Email" />
             <input class="form-control" v-model="password" type="password" placeholder="Şifre" />
             <div class="text-center">
-                <button class="btn btn-success" @click.prevent="submitHandle">GİRİŞ YAP</button>
+                <button class="btn btn-success" @click.prevent="submitHandle($event)">GİRİŞ YAP</button>
             </div>
             <div class="d-flex justify-content-between">
                 <RouterLink to="/kayit-ol">Kayıt Ol</RouterLink>
@@ -69,7 +69,9 @@ export default {
             });
             return response;
         },
-        submitHandle() {
+        submitHandle(event) {
+            let btn = event.currentTarget;
+            btn.setAttribute("disabled", "true");
             this.fetchFunc("https://tıktık.com:8443/api/auth/login", "POST", {}, {
                 "email": this.email,
                 "password": this.password
@@ -93,6 +95,10 @@ export default {
                 if (res.status == 401) {
                     this.alert = "Vermiş olduğunuz bilgiler birbiriyle uyuşmamaktadır."
                 }
+            }).catch(() => {
+                this.alert = "Vermiş olduğunuz bilgiler birbiriyle uyuşmamaktadır."
+            }).finally(() => {
+                btn.removeAttribute("disabled");
             })
         }
     }
