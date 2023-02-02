@@ -25,7 +25,7 @@
         <h2 class="accordion-header position-relative accordion-button collapsed" id="headingOne"
           data-bs-toggle="collapse" :data-bs-target="'#activeOrder' + order.id" aria-expanded="false"
           :aria-controls="'activeOrder' + order.id" @click="hideOrderMessage($event)">
-          <span :id="'orderMessage' + order.id" class="order-message" style="display:none;">
+          <span :id="'dutyOrderMessage' + order.id" class="order-message" style="display:none;">
             <i class="fa-solid fa-3x fa-triangle-exclamation"></i></span>
           <div class="d-flex justify-content-between w-100">
             <div v-text="'Sipariş No: ' + order.id"> </div>
@@ -82,11 +82,13 @@
             </div>
             <div v-if="order.payment.method == 'Kredi Kartı'">
               <div class="alert alert-success">Kredi Kartı İle Ödemesi Alınmıştır</div>
-              <button class="btn btn-success" @click="setOrderStatus(order, 6)">Siparişi Teslim Et</button>
+              <div v-if="order.status == '6'" class="alert alert-success">Sipariş Teslim Edildi</div>
+              <button v-else class="btn btn-success" @click="setOrderStatus(order, 6)">Siparişi Teslim Et</button>
             </div>
             <div v-else-if="order.payment.method == 'Kapıda Ödeme' && order.payment.status == 'Ödendi'">
               <div class="alert alert-success">Kapıda Ödeme İle Ödemesi Alınmıştır</div>
-              <button class="btn btn-success" @click="setOrderStatus(order, 6)">Siparişi Teslim Et</button>
+              <div v-if="order.status == '6'" class="alert alert-success">Sipariş Teslim Edildi</div>
+              <button v-else class="btn btn-success" @click="setOrderStatus(order, 6)">Siparişi Teslim Et</button>
             </div>
             <div v-if="order.payment.status == 'Ödenmedi'">
               <button class="btn btn-sm btn-primary" @click="collectPayment(order)">Ödeme Al</button>
@@ -285,7 +287,7 @@
                   </small>
                   <small>
                     <div><b>Adres: </b> <button style="background: #4027bb;color:white" class="btn btn-sm"
-                        @click="openMaps(order.address)">GİT</button></div>
+                        @click="openMaps(order.address, order.vendor)">GİT</button></div>
                     <div v-text="order.address.address"></div>
                     <div v-text="order.address.district + '/' + order.address.province"></div>
                     <div>
@@ -622,7 +624,7 @@ export default {
 
       if (!params.level) return;
       if (!params.orderId) return;
-      if (params.level == "item" && !params.itemId) return;
+      //if (params.level == "item" && !params.itemId) return;
 
       if (params.process == "create") {
         this.getOneOrder(params.orderId).then((res) => {
@@ -634,15 +636,22 @@ export default {
       } else {
         let orderIndex = this.orders.findIndex(e => e.id == params.orderId);
         let type = "orders";
-        if (orderIndex == -1) {
+        if (orderIndex < 0) {
           type = "carrierOrders";
           orderIndex = this.carrierOrders.findIndex(e => e.id == params.orderId);
         }
         this.getOneOrder(params.orderId).then((res) => {
-          type == "orders" ? this.orders.splice(orderIndex, 1, res) : this.carrierOrders.splice(orderIndex, 1, res);
-          this.$nextTick(() => {
-            document.querySelector("#orderMessage" + params.orderId).style.display = "inline-block";
-          })
+          if (type == "orders") {
+            this.orders.splice(orderIndex, 1, res);
+            this.$nextTick(() => {
+              document.querySelector("#orderMessage" + params.orderId).style.display = "inline-block";
+            })
+          } else {
+            this.carrierOrders.splice(orderIndex, 1, res);
+            this.$nextTick(() => {
+              document.querySelector("#dutyOrderMessage" + params.orderId).style.display = "inline-block";
+            })
+          }
         })
       }
     })
