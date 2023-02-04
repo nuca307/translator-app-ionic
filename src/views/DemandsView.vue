@@ -104,6 +104,8 @@
                 <small>
                   <h6>Teslimat Bilgileri</h6>
                   <hr>
+                  <div><b>Müşteri Ad-Soyad: </b></div>
+                  <div v-text="order.user.firstName + ' ' + order.user.lastName"></div>
                   <b>Telefon: </b>
                   <span v-text="order.user.phone"></span>
                 </small>
@@ -120,10 +122,11 @@
                 </small>
               </div>
               <div class="col-md-6">
-
                 <small>
                   <h6>Tedarikçi Bilgileri</h6>
                   <hr>
+                  <div><b>Tedarikçi: </b></div>
+                  <div v-text="order.vendor.name"></div>
                   <b>Telefon: </b>
                   <span v-text="order.vendor.phone"></span>
                 </small>
@@ -270,7 +273,10 @@
                 <strong
                   v-text="'Toplam Tutar: ' + (order.totalItemPrice + order.carryingPrice).toFixed(2) + '₺'"></strong>
               </div>
+              <span v-if="order.carrier"><i class="fa-solid fa-circle-user"></i> Kurye: <strong
+                  v-text="order.carrier.firstName + ' ' + order.carrier.lastName"></strong></span>
               <button class="btn btn-sm btn-primary" @click="setOrderCarrier(order)">SEÇ</button>
+
               <div v-if="order.vendorNote">
                 <small><b>Tedarikçi Notu: </b></small>
                 <span v-text="order.vendorNote"></span>
@@ -282,6 +288,8 @@
                   <small>
                     <h6>Teslimat Bilgileri</h6>
                     <hr>
+                    <div><b>Müşteri Ad-Soyad: </b></div>
+                    <div v-text="order.user.firstName + ' ' + order.user.lastName"></div>
                     <b>Telefon: </b>
                     <span v-text="order.user.phone"></span>
                   </small>
@@ -298,10 +306,11 @@
                   </small>
                 </div>
                 <div class="col-md-6">
-
                   <small>
                     <h6>Tedarikçi Bilgileri</h6>
                     <hr>
+                    <div><b>Tedarikçi: </b></div>
+                    <div v-text="order.vendor.name"></div>
                     <b>Telefon: </b>
                     <span v-text="order.vendor.phone"></span>
                   </small>
@@ -453,11 +462,11 @@ export default {
       link.id = 'someLink'; //give it an ID!
       link.target = '_blank';
       let waypoints = encodeURI(vendor.address + " " + vendor.province + " " + vendor.district);
-      if (address.latitude && address.longitude) {
-        link.href = `https://www.google.com/maps/dir/?api=1&destination=${address.latitude}%2C${address.longitude}&waypoints=${waypoints}`;
+      if (address.latitude != 37.42 && address.longitude != 31.85) {
+        link.href = `https://www.google.com/maps/dir/?api=1&destination=${address.latitude}%2C${address.longitude}`;// &waypoints=${waypoints}
       } else {
         let destination = encodeURI(address.address + " " + address.province + " " + address.district);
-        link.href = `https://www.google.com/maps/dir/?api=1&destination=${destination}&waypoints=${waypoints}`;
+        link.href = `https://www.google.com/maps/dir/?api=1&destination=${destination}`;// &waypoints=${waypoints}
       }
       document.body.append(link);
 
