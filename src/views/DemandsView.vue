@@ -119,6 +119,8 @@
                     <span v-text="' Kat: ' + order.address.floor"></span>
                     <span v-text="' Daire: ' + order.address.roomNumber"></span>
                   </div>
+                  <div><b>Tarif: </b></div>
+                  <div v-text="order.address.directions"></div>
                 </small>
               </div>
               <div class="col-md-6">
@@ -303,6 +305,8 @@
                       <span v-text="' Kat: ' + order.address.floor"></span>
                       <span v-text="' Daire: ' + order.address.roomNumber"></span>
                     </div>
+                    <div><b>Tarif: </b></div>
+                    <div v-text="order.address.directions"></div>
                   </small>
                 </div>
                 <div class="col-md-6">
@@ -462,7 +466,7 @@ export default {
       link.id = 'someLink'; //give it an ID!
       link.target = '_blank';
       let waypoints = encodeURI(vendor.address + " " + vendor.province + " " + vendor.district);
-      if (address.latitude != 37.42 && address.longitude != 31.85) {
+      if (address.latitude && address.longitude && address.latitude != 37.42 && address.longitude != 31.85) {
         link.href = `https://www.google.com/maps/dir/?api=1&destination=${address.latitude}%2C${address.longitude}`;// &waypoints=${waypoints}
       } else {
         let destination = encodeURI(address.address + " " + address.province + " " + address.district);
