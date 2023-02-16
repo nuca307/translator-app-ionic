@@ -10,7 +10,7 @@
             <div class="text-center">
                 <button class="btn btn-success" @click.prevent="submitHandle($event)">GİRİŞ YAP</button>
             </div>
-            <div class="d-flex justify-content-between">
+            <div hidden class="d-flex justify-content-between">
                 <RouterLink to="/kayit-ol">Kayıt Ol</RouterLink>
                 <RouterLink to="/" onclick="localStorage.clear()">Kaydolmadan Devam Et</RouterLink>
             </div>
@@ -18,7 +18,7 @@
                 <span class="text-danger" v-text="alert"></span>
             </div>
         </form>
-    </ion-page>
+</ion-page>
 </template>
 <script>
 import { RouterLink } from 'vue-router';
