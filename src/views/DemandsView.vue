@@ -49,8 +49,7 @@
               <span class="badge bg-success" style="min-width: 110px;" v-else-if="order.status == '1'"><i
                   class="fa-solid fa-check"></i>
                 Onaylandı</span>
-              <span class="badge bg-warning" style="min-width: 110px;"
-                v-else-if="order.status == '2'">İnceleniyor</span>
+              <span class="badge bg-warning" style="min-width: 110px;" v-else-if="order.status == '2'">İnceleniyor</span>
               <span class="badge bg-primary" style="min-width: 110px;" v-else-if="order.status == '3'"><i
                   class="fa-solid fa-spinner fa-spin"></i> Hazırlanıyor</span>
               <span class="badge bg-primary" style="min-width: 110px;" v-else-if="order.status == '4'"><i
@@ -77,8 +76,7 @@
             <div class="d-flex justify-content-between">
               <small v-text="'Ürün Tutarı: ' + order.totalItemPrice.toFixed(2) + '₺'"></small>
               <small class="mx-2" v-text="'Hizmet Tutarı: ' + order.carryingPrice.toFixed(2) + '₺'"></small>
-              <strong
-                v-text="'Toplam Tutar: ' + (order.totalItemPrice + order.carryingPrice).toFixed(2) + '₺'"></strong>
+              <strong v-text="'Toplam Tutar: ' + (order.totalItemPrice + order.carryingPrice).toFixed(2) + '₺'"></strong>
             </div>
             <div v-if="order.payment.method == 'Kredi Kartı'">
               <div class="alert alert-success">Kredi Kartı İle Ödemesi Alınmıştır</div>
@@ -108,6 +106,8 @@
                   <div v-text="order.user.firstName + ' ' + order.user.lastName"></div>
                   <b>Telefon: </b>
                   <span v-text="order.user.phone"></span>
+                  <a :href="'tel:' + order.user.phone" style="background: #4027bb;color:white" class="btn btn-sm">ARAMA
+                    YAP</a>
                 </small>
                 <small>
                   <div><b>Adres: </b> <button style="background: #4027bb;color:white" class="btn btn-sm"
@@ -173,11 +173,10 @@
                       <span class="badge bg-warning" v-else-if="orderItem.status == '-2'"><i
                           class="fa-solid fa-strikethrough"></i>
                         İptal İnceleniyor</span>
-                      <span class="badge bg-danger" v-else-if="orderItem.status == '-1'"><i
-                          class="fa-solid fa-xmark"></i> Satıcı İptal Etti</span>
+                      <span class="badge bg-danger" v-else-if="orderItem.status == '-1'"><i class="fa-solid fa-xmark"></i>
+                        Satıcı İptal Etti</span>
                       <span class="badge bg-warning" v-else-if="orderItem.status == '0'">Bekleniyor</span>
-                      <span class="badge bg-success" v-else-if="orderItem.status == '1'"><i
-                          class="fa-solid fa-check"></i>
+                      <span class="badge bg-success" v-else-if="orderItem.status == '1'"><i class="fa-solid fa-check"></i>
                         Onaylandı</span>
                       <span class="badge bg-warning" v-else-if="orderItem.status == '2'">İnceleniyor</span>
                       <span class="badge bg-primary" v-else-if="orderItem.status == '3'"><i
@@ -239,8 +238,7 @@
                 <span class="badge bg-danger" style="min-width: 110px;" v-else-if="order.status == '-1'"><i
                     class="fa-solid fa-xmark"></i> Satıcı İptal
                   Etti</span>
-                <span class="badge bg-warning" style="min-width: 110px;"
-                  v-else-if="order.status == '0'">Bekleniyor</span>
+                <span class="badge bg-warning" style="min-width: 110px;" v-else-if="order.status == '0'">Bekleniyor</span>
                 <span class="badge bg-success" style="min-width: 110px;" v-else-if="order.status == '1'"><i
                     class="fa-solid fa-check"></i>
                   Onaylandı</span>
@@ -294,6 +292,8 @@
                     <div v-text="order.user.firstName + ' ' + order.user.lastName"></div>
                     <b>Telefon: </b>
                     <span v-text="order.user.phone"></span>
+                    <a :href="'tel:' + order.user.phone" style="background: #4027bb;color:white" class="btn btn-sm">ARAMA
+                      YAP</a>
                   </small>
                   <small>
                     <div><b>Adres: </b> <button style="background: #4027bb;color:white" class="btn btn-sm"
@@ -403,7 +403,7 @@
     </div>
     <div v-else class="alert alert-warning">Gösterilecek Talep Yok</div>
     <toast-vue :toast="toast"></toast-vue>
-  </div>
+</div>
 </template>
  
 <script>
