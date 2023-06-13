@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">TıkTık-Kurye</string>
-    <string name="title_activity_main">TıkTık-Kurye</string>
-    <string name="package_name">com.nalinci.tiktik.kurye</string>
-    <string name="custom_url_scheme">com.nalinci.tiktik.kurye</string>
+    <string name="app_name">Dil Öğreniyorum</string>
+    <string name="title_activity_main">Dil Öğreniyorum</string>
+    <string name="package_name">com.algoritimbilisim.dil</string>
+    <string name="custom_url_scheme">com.algoritimbilisim.dil</string>
 </resources>

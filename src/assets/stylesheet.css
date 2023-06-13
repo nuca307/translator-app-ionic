@@ -1,0 +1,9 @@
+@font-face {
+    font-family: 'Ata Rounded 65';
+    src: url('subset-Ata-Rounded-65-Medium.woff2') format('woff2'),
+        url('subset-Ata-Rounded-65-Medium.woff') format('woff');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+

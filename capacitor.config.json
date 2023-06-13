@@ -1,12 +1,18 @@
 {
-  "appId": "com.nalinci.tiktik.kurye",
-  "appName": "TıkTık-Kurye",
+  "appId": "com.algoritimbilisim.dil",
+  "appName": "Dil Öğreniyorum",
   "bundledWebRuntime": false,
   "npmClient": "npm",
   "webDir": "dist",
   "plugins": {
     "SplashScreen": {
       "launchShowDuration": 0
+    },
+    "SpeechRecognition": {
+      "android": {
+        "packageName": "com.algoritimbilisim.dil", 
+        "permission": "android.permission.RECORD_AUDIO" 
+      }
     }
   },
   "cordova": {},

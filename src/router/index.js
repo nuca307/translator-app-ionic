@@ -12,56 +12,64 @@ const router = createRouter({
   },
   routes: [
     {
+      name: "GirisYap",
       path: "/",
-      name: "home",
-      component: () => import("../pages/DemandsPage.vue"),
-    },
-    {
-      path: "/giris-yap",
-      name: "giris-yap",
-      component: () => import("../views/LoginView.vue"),
-    },
-    {
+      component: () => import("@/pages/GirisYapPage.vue"),
+  },
+  
+  {
+      name: "HesapKurtar",
+      path: "/hesapkurtar",
+      component: () => import("@/pages/HesapKurtarPage.vue"),
+  },
+  
+  {
+      name: "AnaSayfa3",
+      path: "/kayitol",
+      component: () => import("@/pages/KayitOlPage.vue"),
+  },
+  
+  {
+      name: "CeviriS",
+      path: "/ceviri",
+      component: () => import("@/pages/CeviriPage.vue"),
+  },
+  
+  {
+      name: "CeviriS2",
+      path: "/ceviri2",
+      component: () => import("@/pages/CeviriPage2.vue"),
+  },
+  
+  {
+      name: "DillerS",
+      path: "/diller",
+      component: () => import("@/pages/DillerPage.vue"),
+  },
+  
+  {
+      name: "Profil0",
       path: "/profil",
-      name: "profil",
-      component: () => import("../pages/ProfilePage.vue"),
-    },
+      component: () => import("@/pages/ProfilPage.vue"),
+  },
+  
+  {
+      name: "ProfilDuzenle1",
+      path: "/profilduzenle1",
+      component: () => import("@/pages/SifreDuzenlePage.vue"),
+  },
+  
+  {
+      name: "ProfilDuzenle2",
+      path: "/profilduzenle2",
+      component: () => import("@/pages/IsimDuzenlePage.vue"),
+  },
+  
   ],
 });
 
-function fetchFunc(resource, method, options = {}, body) {
-  const { timeout = 20000 } = options;
-  const controller = new AbortController();
-  const AbortTimer = setTimeout(() => controller.abort(), timeout);
-  let headers = {
-    method: method,
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': localStorage.getItem('token'),
-      ...options.headers
-    },
-    signal: controller.signal
-  };
-  if (method == "POST" || method == "PUT") {
-    headers.body = JSON.stringify(body);
-  }
-  const response = new Promise((resolve, reject) => {
-    fetch(resource, headers)
-      .then(response => response.json())
-      .then(data => {
-        resolve(data);
-      })
-      .catch(() => {
-        reject();
-      })
-      .finally(() => {
-        clearTimeout(AbortTimer);
-      });
-  });
-  return response;
-}
 // Auth control
-router.beforeEach((to, from, next) => {
+/*router.beforeEach((to, from, next) => {
   if (to.fullPath == "/giris-yap" || from.fullPath == "/giris-yap" || from.fullPath == "/kayit-ol") {
     next();
     return;
@@ -109,5 +117,5 @@ router.beforeEach((to, from, next) => {
     return;
   }
 
-})
+})*/
 export default router;

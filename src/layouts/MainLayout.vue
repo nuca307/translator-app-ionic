@@ -1,364 +1,193 @@
 <template>
     <ion-page class="container-fluid"
         style="overflow:auto;max-height: 100vh;min-height: 100vh;margin-top: constant(safe-area-inset-top) !important;margin-top: env(safe-area-inset-top) !important;">
-        <div class="row flex-nowrap">
-            <main class="col py-3">
-                <navbar :pageIndex="pageIndex" :basket="basket" :username="getUserName"></navbar>
-                <slot :basket="basket" />
-            </main>
-        </div>
-        <toast-vue :toast="toast"></toast-vue>
+        <slot />
     </ion-page>
 </template>
   
 <script>
-import { Toast } from "bootstrap";
-import Navbar from "../components/NavbarVue.vue";
-import ToastVue from '../components/ToastVue.vue';
 import { IonPage } from "@ionic/vue";
-
 
 export default {
     props: ["pageIndex"],
     components: {
-        Navbar,
-        ToastVue,
         IonPage,
     },
-    provide: function () {
-        return {
-            basketSummary: this.basketSummary,
-            basketInfo: this.basketInfo,
-            websocket: this.websocket
-        }
-    },
-    data() {
-        return {
-            toast: {},
-            toastVue: undefined,
-            basket: {},
-            basketDraft: {
-                "id": "",
-                "userId": "",
-                "basketItems": [],
-                "amount": "",
-                "unit": "",
-                "price": "",
-                "discountedPrice": "",
-                "discount": "",
-                "isDone": "",
-                "createdAt": "",
-                "creator": "",
-                "updatedAt": "",
-                "updater": ""
-            },
-            basketSummary: {},
-            basketInfo: {},
-            onBasketCount: 0,
-            websocket: undefined
-        }
-    },
-    computed: {
-        getUserName() {
-            let user = localStorage.getItem("user");
-            let username = user ? (JSON.parse(user).firstName + " " + JSON.parse(user).lastName) : "";
-            return username;
-        }
-    },
-    methods: {
-        fetchFunc(resource, method, options = {}, body) {
-            const { timeout = 20000 } = options;
-            const controller = new AbortController();
-            const AbortTimer = setTimeout(() => controller.abort(), timeout);
-            let headers = {
-                method: method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': localStorage.getItem('token'),
-                    ...options.headers
-                },
-                signal: controller.signal
-            };
-            if (method == "POST" || method == "PUT") {
-                headers.body = JSON.stringify(body);
-            }
-            const response = new Promise((resolve, reject) => {
-                fetch(resource, headers)
-                    .then(response => response.json())
-                    .then(data => {
-                        resolve(data);
-                    })
-                    .catch(() => {
-                        reject();
-                    })
-                    .finally(() => {
-                        clearTimeout(AbortTimer);
-                    });
-            });
-            return response;
-        },
-        connectToWebSocket() {
-            let user = JSON.parse(localStorage.getItem("user"));
-            if (user) {
-                let wsURI = "wss://tıktık.com:8443/api/socket/purchaseOrder?auth=" + localStorage.getItem("token") + "&carrierId=" + user.id;
 
-                if (this.websocket != undefined && this.websocket.readyState === WebSocket.OPEN) {
-                    this.websocket.close();
-                }
-                this.websocket = new WebSocket(wsURI);
-                this.websocket.onmessage = (message) => {
-
-                    //Sound notification
-                    var audio = new Audio("/sound/bildirim.mp3");
-                    audio.play();
-                    this.emitter.emit("on_websocket_message", message);
-                }
-            }
-        },
-        setUsersBasket() {
-            let user = JSON.parse(localStorage.getItem("user"));
-            if (!user) {
-                this.setLocalBasket();
-                return;
-            }
-            let method = this.basket.id ? "PUT" : "POST";
-            this.basket.userId = user.id;
-            this.fetchFunc("https://tıktık.com:8443/api/baskets/", method, {
-                headers: {
-                    "Authorization": localStorage.getItem("token")
-                }
-            },
-                this.basket
-            ).then(res => {
-                this.basket = res;
-                this.showToast();
-
-            }).catch((err) => {
-                this.showToast({}, err);
-            })
-        },
-        setLocalBasket() {
-            localStorage.setItem("basket", JSON.stringify(this.basket));
-        },
-        getAllOrders() {
-            return new Promise((resolve) => {
-                this.fetchFunc("purchaseOrders/alive/" + JSON.parse(localStorage.getItem("user")).id, "GET", {}).then(res => {
-                    this.orders = res;
-                    resolve(res);
-                })
-            });
-
-        },
-        addFood(food) {
-            let item;
-            if (this.basket.basketItems)
-                item = this.basket.basketItems.find(e => e.productId == food.variant.id && e.moduleName == 'food');
-            else
-                this.basket.basketItems = [];
-
-            if (item) {
-                item.amount = item.amount ? item.amount + 1 : 1;
-                this.onBasketCount += item.amount;
-            } else {
-                this.basket.basketItems.push({
-                    amount: 1,
-                    image: food.images[0],
-                    name: food.name + "/" + food.variant.name + " " + food.variant.unit,
-                    price: food.variant.price,
-                    discount: food.variant.discount,
-                    discountedPrice: food.variant.discountedPrice,
-                    productId: food.variant.id,
-                    unit: food.variant.unit,
-                    vendor: { id: food.vendor.id },
-                    moduleName: food.mainCategory.moduleName,
-                    customerNote: ""
-                });
-            }
-
-            this.setBasketSummary();
-            this.setUsersBasket();
-        },
-        removeFood(food) {
-            let itemIndex = this.basket.basketItems.findIndex(e => e.productId == food.variant.id && e.moduleName == 'food');
-            if (itemIndex > -1) {
-                let item = this.basket.basketItems[itemIndex];
-                if (item.amount > 0) {
-                    item.amount--;
-                } else {
-                    this.basket.basketItems.splice(itemIndex, 1);
-                    delete this.basketSummary[item.moduleName + item.productId];
-                }
-
-                if (item.amount == 0) {
-                    this.basket.basketItems.splice(itemIndex, 1);
-                    delete this.basketSummary[item.moduleName + item.productId];
-                } else {
-                    this.setBasketSummary();
-                }
-                this.setUsersBasket();
-            }
-        },
-        addProduct(product) {
-            let item;
-            if (this.basket.basketItems)
-                item = this.basket.basketItems.find(e => e.productId == product.id && e.moduleName == 'shopping');
-            else
-                this.basket.basketItems = [];
-
-            if (item) {
-                item.amount = item.amount ? item.amount + 1 : 1;
-                this.onBasketCount += item.amount;
-            } else {
-                this.basket.basketItems.push({
-                    amount: 1,
-                    image: product.images[0],
-                    name: product.name,
-                    price: product.price,
-                    discount: product.discount,
-                    discountedPrice: product.discountedPrice,
-                    productId: product.id,
-                    unit: product.unit,
-                    vendor: { id: product.vendor.id },
-                    moduleName: product.mainCategory.moduleName,
-                    customerNote: ""
-                });
-            }
-
-            this.setBasketSummary();
-            this.setUsersBasket();
-        },
-        removeProduct(product) {
-            let itemIndex = this.basket.basketItems.findIndex(e => e.productId == product.id && e.moduleName == 'shopping');
-            if (itemIndex > -1) {
-                let item = this.basket.basketItems[itemIndex];
-                if (item.amount > 0) {
-                    item.amount--;
-                } else {
-                    this.basket.basketItems.splice(itemIndex, 1);
-                    delete this.basketSummary[item.moduleName + item.productId];
-                }
-
-                if (item.amount == 0) {
-                    this.basket.basketItems.splice(itemIndex, 1);
-                    delete this.basketSummary[item.moduleName + item.productId];
-                } else {
-                    this.setBasketSummary();
-                }
-                this.setUsersBasket();
-            }
-        },
-        addItem(item) {
-            let foundItem = this.basket.basketItems.find(e => e.productId == item.productId && e.moduleName == item.moduleName);
-
-            foundItem.amount++;
-
-            this.setBasketSummary();
-            this.setUsersBasket();
-            this.setBasketInfo();
-        },
-        removeItem(item) {
-            let itemIndex = this.basket.basketItems.findIndex(e => e.productId == item.productId && e.moduleName == item.moduleName);
-            let foundItem = this.basket.basketItems[itemIndex];
-
-            foundItem.amount--;
-
-            if (foundItem.amount <= 0) {
-                this.basket.basketItems.splice(itemIndex, 1);
-                delete this.basketSummary[item.moduleName + item.productId];
-            }
-            this.setBasketSummary();
-            this.setUsersBasket();
-            this.setBasketInfo();
-
-        },
-        setBasketSummary() {
-            this.basket.basketItems.forEach(item => {
-                this.basketSummary[item.moduleName + item.productId] = item.amount;
-            });
-        },
-        setBasketInfo() {
-            let res = this.basket;
-            if (res) {
-                for (const r in res) {
-                    if (r == "basketItems") {
-                        this.basketInfo.basketItems = [];
-                        res[r].forEach((item, index) => {
-                            this.basketInfo.basketItems[index] = {};
-                            for (const i in item) {
-                                this.basketInfo.basketItems[index][i] = item[i];
-                            }
-                        });
-                    } else {
-                        this.basketInfo[r] = res[r];
-                    }
-                }
-            }
-            else {
-                this.basketInfo = { ...this.basketDraft };
-            }
-        },
-        showToast(options, error) {
-            if (error) {
-                this.toast = {
-                    header: "Hata Meydana Geldi",
-                    time: new Date(),
-                    message: error.message,
-                    class: "text-bg-danger fade show",
-                    ...options
-                }
-            } else {
-                this.toast = {
-                    header: "İşlem Başarılı",
-                    time: new Date(),
-                    message: "Sepet Güncellendi",
-                    class: "text-bg-success fade show",
-                    ...options
-                }
-            }
-
-            if (!this.toastVue) {
-                this.toastVue = new Toast(document.querySelector("#toast_alert"));
-                this.toastVue.show();
-            } else {
-                Toast.getOrCreateInstance(document.querySelector("#toast_alert")).show();
-            }
-        }
-    },
-    mounted() {
-        this.connectToWebSocket();
-        this.emitter.on("basket_add_to_product", (product) => {
-            this.addProduct(product);
-        })
-        this.emitter.on("basket_remove_from_product", (product) => {
-            this.removeProduct(product);
-        })
-        this.emitter.on("basket_add_to_food_variant", (food) => {
-            this.addFood(food);
-        })
-        this.emitter.on("basket_remove_from_food_variant", (food) => {
-            this.removeFood(food);
-        })
-        this.emitter.on("basket_add_to_item", (item) => {
-            this.addItem(item);
-        })
-        this.emitter.on("basket_remove_from_item", (item) => {
-            this.removeItem(item);
-        })
-        this.emitter.on("send_websocket_message", (message) => {
-            this.websocket.send(message);
-        })
-    },
-    created() {
-    },
-    beforeUnmount() {
-        this.emitter.off("basket_add_to_food_variant");
-        this.emitter.off("basket_remove_from_food_variant");
-        this.emitter.off("basket_add_to_product");
-        this.emitter.off("basket_remove_from_product");
-        this.emitter.off("basket_add_to_item");
-        this.emitter.off("basket_remove_from_item");
-        this.emitter.off("send_websocket_message");
-    }
 };
 
 </script>
+
+
+<style>
+@font-face {
+    font-family: 'Ata Rounded 65';
+    src: url('../fonts/subset-Ata-Rounded-65-Medium.woff2') format('woff2'),
+        url('../fonts/subset-Ata-Rounded-65-Medium.woff') format('woff');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+body {
+    background: rgb(11, 15, 27);
+    background: -moz-linear-gradient(0deg, rgba(11, 15, 27, 1) 0%, rgba(19, 24, 43, 1) 57%, rgba(36, 44, 77, 1) 100%);
+    background: -webkit-linear-gradient(0deg, rgba(11, 15, 27, 1) 0%, rgba(19, 24, 43, 1) 57%, rgba(36, 44, 77, 1) 100%);
+    background: linear-gradient(0deg, rgba(11, 15, 27, 1) 0%, rgba(19, 24, 43, 1) 57%, rgba(36, 44, 77, 1) 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#0b0f1b", endColorstr="#242c4d", GradientType=1);
+    height: 100vh;
+    color: white;
+}
+
+
+.container {}
+
+.form-control::placeholder {
+    color: white;
+    opacity: 1;
+}
+
+.form-control {
+    display: block;
+    width: 100%;
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 2.5;
+    color: var(--bs-body-color);
+    background-color: #14192d;
+    background-clip: padding-box;
+    border: var(--bs-border-width) solid #6e4fad;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border-radius: 15px;
+    transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+    color: white;
+}
+
+.btn-outline-light {
+    --bs-btn-color: #adb0b3;
+    --bs-btn-border-color: #6e4fad;
+    --bs-btn-hover-color: #000;
+    --bs-btn-hover-bg: #6e4fad;
+    --bs-btn-hover-border-color: #6e4fad;
+    --bs-btn-focus-shadow-rgb: 248, 249, 250;
+    --bs-btn-active-color: #000;
+    --bs-btn-active-bg: #6e4fad;
+    --bs-btn-active-border-color: #6e4fad;
+    --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    --bs-btn-disabled-color: #6e4fad;
+    --bs-btn-disabled-bg: transparent;
+    --bs-btn-disabled-border-color: #6e4fad;
+    --bs-gradient: none;
+    border-radius: 15px;
+}
+
+.ana-baslik-main {
+    margin-top: 80px;
+    margin-bottom: 80px;
+}
+
+.ana-baslik {
+    font-family: 'Ata Rounded 65';
+}
+
+.buyuk {
+    font-size: calc(3.5rem);
+}
+
+.kucuk {
+    font-size: calc(1.5rem);
+}
+
+.textarea1 {
+    border-radius: 10px 10px 0px 0px;
+    background: #0c0f1e;
+    border: hidden;
+    color: white;
+}
+
+.textarea2 {
+    border-radius: 0px 0px 10px 10px;
+    background: #0c0f1e;
+    border: hidden;
+    color: white;
+}
+
+hr {
+    margin: 0;
+    opacity: 1;
+    color: #6e4fad;
+}
+
+footer {
+    background: #000;
+    height: 5rem;
+    position: absolute;
+    bottom: 0rem;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    left: 0;
+}
+
+.home,
+.profil {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1.5rem;
+}
+
+.home i,
+.profil i {
+    height: 1rem;
+}
+
+.form-floating>.form-control-plaintext~label::after,
+.form-floating>.form-control:focus~label::after,
+.form-floating>.form-control:not(:placeholder-shown)~label::after,
+.form-floating>.form-select~label::after {
+    position: absolute;
+    inset: 1rem 0.375rem;
+    z-index: -1;
+    height: 1.5em;
+    content: "";
+    background-color: #14192d;
+    border-radius: var(--bs-border-radius);
+}
+
+.form-floating>.form-control-plaintext~label,
+.form-floating>.form-control:focus~label,
+.form-floating>.form-control:not(:placeholder-shown)~label,
+.form-floating>.form-select~label {
+    color: white;
+}
+
+.geri-btn {
+    background-color: transparent;
+    color: white;
+    border: none;
+    font-size: 30px;
+    margin-right: 70px;
+    height: 115px;
+}
+
+.form-control:focus {
+    color: white;
+    background-color: #14192d;
+}
+
+.form-control:disabled {
+    background-color: #14192d;
+}
+
+textarea {
+    padding: 1rem;
+    padding-top: 3rem;
+    width: 100%;
+}
+</style>

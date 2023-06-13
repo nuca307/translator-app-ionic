@@ -30,6 +30,9 @@ import "bootstrap/dist/css/bootstrap.min.css"
 import "bootstrap"
 
 import mitt from 'mitt';
+
+import { SpeechRecognition } from '@capacitor-community/speech-recognition';
+
 const emitter = mitt();
 
 const app = createApp(App)
@@ -38,6 +41,7 @@ const app = createApp(App)
   .use(store);
 
 app.config.globalProperties.emitter = emitter;
+app.config.globalProperties.$speechRecognition = SpeechRecognition;
 
 router.isReady().then(() => {
   app.mount('#app');

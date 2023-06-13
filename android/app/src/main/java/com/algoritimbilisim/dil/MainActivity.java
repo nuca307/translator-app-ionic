@@ -1,4 +1,4 @@
-package com.nalinci.tiktik.kurye;
+package com.algoritimbilisim.dil;
 
 import com.getcapacitor.BridgeActivity;
 
