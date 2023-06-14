@@ -4,27 +4,29 @@
             <h1 class="ana-baslik buyuk" style="display: inline">DİL</h1>
             <h6 class="ana-baslik kucuk" style="display: inline">Öğreniyorum</h6>
         </div>
-        
+
         <h6 class="text-center" style="font-weight: bold">Hesap Kurtar</h6>
-        
-        <input class="form-control mt-4" type="email" placeholder="E-posta" @blur="soruGelsin()" v-model="eposta">
+
+        <input id="e_posta" class="form-control mt-4" type="email" placeholder="E-posta" @blur="validasyon($event)"
+            v-model="eposta">
         <input class="form-control mt-4" type="email" :placeholder="soru" :value="soru" disabled>
-        <input class="form-control mt-4" type="email" placeholder="Şifre kurtarma sorunuzun cevabını giriniz" v-model="cevap">
-        
+        <input class="form-control mt-4" type="email" placeholder="Şifre kurtarma sorunuzun cevabını giriniz"
+            v-model="cevap">
+
         <div class="d-flex justify-content-around mt-5">
-            <button type="button" class="btn btn-outline-light" style="width: 7rem;"  @click="kontrol()">Gönder</button>
+            <button type="button" class="btn btn-outline-light" style="width: 7rem;" @click="kontrol()">Gönder</button>
         </div>
     </div>
 </template>
 
 <script>
-export default{
-    data(){
-        return{
+export default {
+    data() {
+        return {
             eposta: "",
             cevap: "",
             soru: "Şifre kurtarma sorusu",
-            
+
         }
     },
     methods: {
@@ -32,41 +34,57 @@ export default{
             this.soru = ""
             let kullanicilar = JSON.parse(localStorage.getItem("kullanicilar"));
             let durum = false
-            for(let i = 0; i < kullanicilar.length; i++) {
-                if(this.eposta == kullanicilar[i].eposta) {
+            for (let i = 0; i < kullanicilar.length; i++) {
+                if (this.eposta == kullanicilar[i].eposta) {
                     this.soru = kullanicilar[i].guvenlikSoru
                     durum = true
                     break
                 }
             }
-            if(durum == false) {
+            if (durum == false) {
                 alert("E-posta kayıtlı değildir!")
-                
+
             }
         },
-        kontrol(){
+        validasyon(e) {
+            e.target.reportValidity();
+            this.soruGelsin();
+        },
+        kontrol() {
             let durum = false
-            if(this.eposta == "") {
+            if (this.eposta == "") {
                 alert("Lütfen e-postanızı giriniz")
-            }else if(this.cevap == "") {
+            } else if (this.cevap == "") {
                 alert("Lütfen cevabınızı giriniz")
-            }else{
+            } else {
+                if (!this.validasyonKontrol()) {
+                    return;
+                }
                 let kullanicilar = JSON.parse(localStorage.getItem("kullanicilar"));
-                for(let i = 0; i<kullanicilar.length; i++) {
-                    if(this.eposta == kullanicilar[i].eposta && this.cevap == kullanicilar[i].guvenlikCevap) {
+                for (let i = 0; i < kullanicilar.length; i++) {
+                    if (this.eposta == kullanicilar[i].eposta && this.cevap == kullanicilar[i].guvenlikCevap) {
                         durum = true
                         break
                     }
                 }
-                if(durum == false) {
+                if (durum == false) {
                     alert("Girilen cevap yanlış!Tekrar giriniz.")
                     this.cevap = ""
                     // this.$router.go("/hesapkurtar");
-                }else if(durum == true) {
+                } else if (durum == true) {
                     let epostas = this.eposta
-                    localStorage.setItem("aktifEposta",epostas)
+                    localStorage.setItem("aktifEposta", epostas)
                     this.$router.push("/sifrekurtar")
                 }
+            }
+        },
+        validasyonKontrol() {
+            const inpObj = document.getElementById("e_posta");
+            if (!inpObj.checkValidity()) {
+                alert("Lütfen Geçerli Bir Eposta Adresi Girin");
+                return false;
+            } else {
+                return true;
             }
         }
     }
