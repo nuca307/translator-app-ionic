@@ -32,7 +32,7 @@ export default {
     },
     methods: {
         kayitOk() {
-            if (this.isim == "" && this.ePosta == "" && this.sifre == "") {
+            if (this.isim == "" || this.ePosta == "" || this.sifre == "") {
                 alert("Tüm bilgileri giriniz!");
             } else if (localStorage.getItem("kullanicilar") == null) {
                 let kullanicilar = [{
