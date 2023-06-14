@@ -1,5 +1,6 @@
 <template>
     <div class="container" style="position: relative;height: 100%;">
+        <i class="fa-solid fa-arrow-right-from-bracket fa-xl" style="color: #6e4fad; margin-top: 1.5rem; position:absolute;right: 1rem ;" @click="logOut()"></i>
         <h5 class="text-center mt-4 mb-5" style="font-weight:bold">Diller</h5>
         <hr>
         <p style="margin:5px;position: relative;" @click="openTrans()">
@@ -39,6 +40,11 @@ export default {
 
         goProfil() {
             this.$router.push("/profil")
+        },
+
+        logOut() {
+            localStorage.removeItem("aktifKullanici")
+            this.$router.push("/")
         }
     },
 }

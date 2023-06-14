@@ -41,7 +41,10 @@ const app = createApp(App)
   .use(store);
 
 app.config.globalProperties.emitter = emitter;
-app.config.globalProperties.$speechRecognition = SpeechRecognition;
+if (Capacitor.getPlatform() !== 'web') {
+  // Plugin'i kullan
+  app.config.globalProperties.$speechRecognition = SpeechRecognition;
+}
 
 router.isReady().then(() => {
   app.mount('#app');

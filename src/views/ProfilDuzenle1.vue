@@ -54,6 +54,7 @@ export default {
                 }
                 if (this.durum == true) {
                     localStorage.removeItem("aktifKullanici");
+                    alert("Şifre Güncellendi!")
                     this.$router.push("/")
                 } else {
                     alert("Mevcut şifre hatalı!")

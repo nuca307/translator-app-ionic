@@ -1,6 +1,7 @@
 <template>
     <div class="container" style="position: relative;height: 100%;">
-        <h5 class="text-center mb-5" style="font-weight:bold; margin:50px auto">Profil</h5>
+        <i class="fa-solid fa-arrow-right-from-bracket fa-xl" style="color: #6e4fad; margin-top: 1.5rem; position:absolute;right: 1rem ;" @click="logOut()"></i>
+        <h5 class="text-center mb-5" style="font-weight:bold; margin:30px auto">Profil</h5>
 
         <form class="form-floating">
             <input type="text" class="form-control mb-3" id="floatingInputValue" placeholder="name@example.com"
@@ -67,7 +68,13 @@ export default {
 
         goProfil() {
             this.$router.push("/profil")
+        },
+        
+        logOut() {
+            localStorage.removeItem("aktifKullanici")
+            this.$router.push("/")
         }
+
     }
 }
 </script>

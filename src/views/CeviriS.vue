@@ -9,7 +9,7 @@
                 <textarea class="textarea1" cols="35" rows="5" placeholder="Metni Girin" v-model="searchText"
                     @change="translateText()"></textarea>
                 <div style="position: absolute; bottom:1rem; right: 1rem;" @click="startListening()">
-                    <i class="fa-solid fa-microphone"></i>
+                    <i class="fa-solid fa-microphone  p-3"></i>
                 </div>
             </div>
             <hr>
@@ -17,7 +17,7 @@
                 <div style="position: absolute; top:1rem; left: 1rem;">
                     <i class="fa-solid fa-volume-high"></i> Türkçe
                 </div>
-                <textarea class="textarea2" cols="35" rows="5" placeholder="Metni Girin" v-model="translation"></textarea>
+                <textarea class="textarea2" cols="35" rows="5" placeholder="Metni Girin" v-model="translation" readonly></textarea>
                 <!--div-- style="position: absolute; bottom:1rem; right: 1rem;">
                     <i class="fa-solid fa-microphone"></i>
                 </!--div-->
@@ -51,27 +51,32 @@ export default {
     },
     methods: {
         async startListening() {
-            try {
-                const result = await SpeechRecognition.start({
-                    language: "en-US",
-                    maxResults: 1,
-                    prompt: "Say something",
-                    partialResults: true,
-                    popup: true,
-                });
-                /*this.recognizedText += JSON.stringify(result);
-                this.recognizedText += result.partialResults
-                // listen to partial results
-                SpeechRecognition.addListener("partialResults", (data) => {
-                    this.recognizedText = data.matches;
-                });*/
-                this.searchText = result.matches[0] || 'Bulunamadı';
+            if (Capacitor.getPlatform() !== 'web') {
 
-                this.$nextTick().then(() => {
-                    this.translateText();
-                });
-            } catch (error) {
-                console.error(error);
+                try {
+                    const result = await SpeechRecognition.start({
+                        language: "en-US",
+                        maxResults: 1,
+                        prompt: "Say something",
+                        partialResults: true,
+                        popup: true,
+                    });
+                    /*this.recognizedText += JSON.stringify(result);
+                    this.recognizedText += result.partialResults
+                    // listen to partial results
+                    SpeechRecognition.addListener("partialResults", (data) => {
+                        this.recognizedText = data.matches;
+                    });*/
+                    this.searchText = result.matches[0] || 'Bulunamadı';
+
+                    this.$nextTick().then(() => {
+                        this.translateText();
+                    });
+                } catch (error) {
+                    console.error(error);
+                }  // Plugin'i kullan
+            } else {
+                alert("Bu özellik webde kulanılmaz")
             }
         },
         translateText() {
@@ -97,9 +102,9 @@ export default {
         }
     },
     mounted() {
-        SpeechRecognition.requestPermissions();
-    }
+        if (Capacitor.getPlatform() !== 'web') {
+            SpeechRecognition.requestPermissions();
+        }
+    }
 }
 </script>
-
-

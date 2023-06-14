@@ -65,6 +65,12 @@ const router = createRouter({
       component: () => import("@/pages/IsimDuzenlePage.vue"),
   },
   
+  {
+      name: "sifreKurtar",
+      path: "/sifrekurtar",
+      component: () => import("@/pages/SifreKurtarPage.vue"),
+  },
+  
   ],
 });
 

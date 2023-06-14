@@ -38,6 +38,7 @@ export default {
                     localStorage.setItem("kullanicilar", JSON.stringify(kullanicilar))
                 }
             localStorage.setItem("aktifKullanici", JSON.stringify(kullanici));
+            alert("İsim Güncellendi!")
             this.$router.push("/profil")
 
         }

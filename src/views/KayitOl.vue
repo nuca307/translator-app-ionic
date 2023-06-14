@@ -11,6 +11,8 @@
             <input class="form-control mt-4" type="text" placeholder="İsim" v-model="isim">
             <input class="form-control mt-3" type="email" placeholder="E-posta" v-model="ePosta">
             <input class="form-control mt-3" type="password" placeholder="Şifre" v-model="sifre">
+            <input class="form-control mt-3" type="text" placeholder="Şifre kurtarma sorunuzu yazınız" v-model="guvenlikSoru">
+            <input class="form-control mt-3" type="password" placeholder="Şifre kurtarma sorunuzun cevabını yazınız" v-model="guvenlikCevap">
         </div>
 
         <div class="d-flex justify-content-around mt-5">
@@ -28,6 +30,8 @@ export default {
             isim: "",
             ePosta: "",
             sifre: "",
+            guvenlikSoru: "",
+            guvenlikCevap: "",
         }
     },
     methods: {
@@ -38,7 +42,9 @@ export default {
                 let kullanicilar = [{
                     isim: this.isim,
                     eposta: this.ePosta,
-                    sifre: this.sifre
+                    sifre: this.sifre,
+                    guvenlikSoru: this.guvenlikSoru,
+                    guvenlikCevap: this.guvenlikCevap
                 }];
                 localStorage.setItem("kullanicilar", JSON.stringify(kullanicilar));
                 this.$router.push("/");
@@ -46,7 +52,9 @@ export default {
                 let newKullanici = {
                     isim: this.isim,
                     eposta: this.ePosta,
-                    sifre: this.sifre
+                    sifre: this.sifre,
+                    guvenlikSoru: this.guvenlikSoru,
+                    guvenlikCevap: this.guvenlikCevap
                 };
                 let kullanicilar1 = JSON.parse(localStorage.getItem("kullanicilar"));
 
