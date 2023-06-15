@@ -76,6 +76,7 @@ router.beforeEach((to, from, next) => {
   if (
     to.fullPath == '/' ||
     to.fullPath == '/hesapkurtar' ||
+    to.fullPath == '/sifrekurtar' ||
     to.fullPath == '/kayitol'
   ) {
     localStorage.setItem('sonyer', to.fullPath)
